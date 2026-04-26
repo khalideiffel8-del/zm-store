@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZM Store - Final Luxury</title>
+    <style>
+        :root { --gold: #d4af37; --bg: #050505; --card: #121212; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; }
+        
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: rgba(10,10,10,0.98); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 5000; }
+        .nav-btn { color: #555; text-align: center; flex: 1; cursor: pointer; font-size: 11px; }
+        .nav-btn.active { color: var(--gold); }
+
+        .page { display: none; padding: 20px; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .luxury-box { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #333; margin-bottom: 15px; }
+        .coin-box { background: var(--gold); color: black; padding: 8px 15px; border-radius: 12px; font-weight: bold; display: inline-block; margin-top: 10px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .item-card { background: var(--card); border-radius: 20px; border: 1px solid #222; overflow: hidden; }
+        .item-card img { width: 100%; height: 150px; object-fit: cover; }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; }
+        .gold-btn { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer; }
+        
+        .music-float { position: fixed; top: 15px; left: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; color: var(--gold); font-size: 10px; z-index: 4000; }
+    </style>
+</head>
+<body>
+
+<div class="music-float" onclick="toggleMusic()">🎻 Music: <span id="mSt">OFF</span></div>
+<audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+
+<div id="home" class="page active">
+    <h1 style="color:var(--gold); text-align:center; letter-spacing:3px;">ZM STORE</h1>
+    <div class="grid" id="productGrid" style="margin-top:20px;"></div>
+</div>
+
+<div id="cartPage" class="page">
+    <h2 style="color:var(--gold);">سەبەتە</h2>
+    <div id="cartList" class="luxury-box">سەبەتە بەتاڵە</div>
+    <div class="luxury-box">
+        <input type="text" id="promoCode" placeholder="Promo Code (ZAKO10)">
+        <button onclick="applyPromo()" style="background:#222; color:white; border:none; padding:10px; border-radius:10px; width:100%;">چالاککردن</button>
+    </div>
+    <div class="luxury-box">
+        <input type="text" id="custName" placeholder="ناو">
+        <textarea id="custAddr" placeholder="ناونیشانی ورد"></textarea>
+        <div id="finalPrice" style="color:var(--gold); font-weight:bold; margin:10px 0;">کۆی گشتی: ٠ د.ع</div>
+        <button class="gold-btn" onclick="sendToWA()">ناردن بۆ واتسئاپ</button>
+    </div>
+</div>
+
+<div id="profile" class="page">
+    <div class="luxury-box" style="text-align:center;">
+        <div style="width:60px; height:60px; background:var(--gold); border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:25px; color:black; font-weight:bold;">Z</div>
+        <h3 style="margin:0;">zakarya</h3>
+        <div class="coin-box">💰 <span id="coins">0</span> Coins</div>
+    </div>
+    <div class="luxury-box" onclick="showAdmin()" style="cursor:pointer;">Settings (Admin) ⚙️</div>
+    <div id="adminPanel" style="display:none;" class="luxury-box">
+        <input id="pName" placeholder="ناوی بۆن">
+        <input id="pPrice" placeholder="نرخ">
+        <input type="file" id="pImg">
+        <button class="gold-btn" onclick="addNewProduct()">پاشەکەوت</button>
+    </div>
+</div>
+
+<div class="nav-bottom">
+    <div class="nav-btn active" onclick="nav('home', this)">🏠<span>سەرەکی</span></div>
+    <div class="nav-btn" onclick="nav('cartPage', this)">🛒<span>سەبەتە</span></div>
+    <div class="nav-btn" onclick="nav('profile', this)">👤<span>پڕۆفایل</span></div>
+</div>
+
+<script>
+    let products = JSON.parse(localStorage.getItem('zm_lux_final')) || [];
+    let cart = [];
+    let coins = parseInt(localStorage.getItem('zm_coins')) || 0;
+    let discount = 0;
+
+    function nav(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+        document.getElementById('coins').innerText = coins;
+    }
+
+    function render() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = products.map((p, i) => `
+            <div class="item-card">
+                <img src="${p.img}">
+                <div style="padding:10px;">
+                    <h5 style="margin:0;">${p.name}</h5>
+                    <div style="color:var(--gold); margin:5px 0;">${p.price} د.ع</div>
+                    <button onclick="addToCart(${i})" style="width:100%; padding:8px; border:none; border-radius:10px; background:#222; color:white;">کڕین</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addToCart(i) {
+        cart.push(products[i]);
+        updateCartUI();
+        alert("زیادکرا ✅");
+    }
+
+    function updateCartUI() {
+        const list = document.getElementById('cartList');
+        let total = cart.reduce((s, item) => s + parseInt(item.price.replace(/,/g,'')), 0);
+        let final = total - (total * discount);
+        list.innerHTML = cart.length === 0 ? "سەبەتە بەتاڵە" : cart.map(item => `• ${item.name}`).join('<br>');
+        document.getElementById('finalPrice').innerText = `کۆی گشتی: ${final.toLocaleString()} د.ع`;
+    }
+
+    function applyPromo() {
+        if(document.getElementById('promoCode').value === "ZAKO10") {
+            discount = 0.10; alert("داشکاندن چالاک بوو!"); updateCartUI();
+        }
+    }
+
+    function sendToWA() {
+        const name = document.getElementById('custName').value;
+        const addr = document.getElementById('custAddr').value;
+        if(!name || !addr || cart.length === 0) return alert("زانیارییەکان پڕ بکەرەوە");
+        coins += 50; localStorage.setItem('zm_coins', coins);
+        window.open(`https://wa.me/9647507131541?text=داواکاری نوێ لە ZM Store\nناو: ${name}\nناونیشان: ${addr}`);
+    }
+
+    function showAdmin() { if(prompt("Code:") === "1234") document.getElementById('adminPanel').style.display = 'block'; }
+
+    function addNewProduct() {
+        const name = document.getElementById('pName').value;
+        const price = document.getElementById('pPrice').value;
+        const file = document.getElementById('pImg').files[0];
+        const r = new FileReader();
+        r.readAsDataURL(file);
+        r.onload = () => {
+            products.push({name, price, img: r.result});
+            localStorage.setItem('zm_lux_final', JSON.stringify(products));
+            render();
+        };
+    }
+
+    function toggleMusic() {
+        const m = document.getElementById('bgMusic');
+        if(m.paused) { m.play(); document.getElementById('mSt').innerText = "ON"; }
+        else { m.pause(); document.getElementById('mSt').innerText = "OFF"; }
+    }
+
+    render();
+    document.getElementById('coins').innerText = coins;
+</script>
+</body>
+</html>
