@@ -13,15 +13,9 @@
         .header { text-align: center; padding: 15px; background: #0a0a0a; border-bottom: 1px solid #333; }
         .header h1 { color: var(--gold); margin: 0; letter-spacing: 3px; font-size: 24px; }
 
-        /* Ads Slider */
         .ads-slider { width: 100%; height: 160px; overflow: hidden; position: relative; background: #050505; border-bottom: 2px solid var(--gold); }
         .ad-slide { width: 100%; height: 100%; display: none; object-fit: cover; }
         .ad-slide.active { display: block; }
-
-        /* Video Ad Section */
-        .video-ad-section { padding: 10px; background: #0a0a0a; margin-bottom: 10px; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; border: 1px solid var(--gold); }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
         .category-menu { display: flex; overflow-x: auto; padding: 10px; gap: 10px; background: #050505; position: sticky; top: 0; z-index: 100; }
         .cat-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 8px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 13px; }
@@ -41,18 +35,23 @@
         .price { color: var(--gold); font-weight: bold; margin-bottom: 8px; display: block; }
         .add-to-cart { background: var(--gold); color: black; border: none; width: 100%; padding: 8px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Cart Styles */
+        /* Cart & Coupon Styles */
         .cart-item { display: flex; gap: 10px; background: #111; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #222; align-items: center; }
         .cart-item img { width: 50px; height: 50px; border-radius: 5px; object-fit: cover; }
+        .coupon-box { margin: 20px 0; display: flex; gap: 5px; }
+        .coupon-box input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; }
+        .btn-apply { background: #2ecc71; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
 
         /* Admin Styles */
         .admin-section { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-        .admin-item { display: flex; align-items: center; background: #0a0a0a; margin-bottom: 8px; padding: 8px; border-radius: 8px; }
-        .admin-item img { width: 40px; height: 40px; border-radius: 4px; margin-left: 10px; }
+        .admin-item { background: #0a0a0a; margin-bottom: 12px; padding: 10px; border-radius: 10px; border-left: 4px solid var(--gold); }
+        .admin-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .admin-top img { width: 50px; height: 50px; border-radius: 5px; object-fit: cover; }
+        .admin-details { font-size: 12px; color: #bbb; line-height: 1.6; }
         
         .admin-form input, .admin-form select { width: 100%; padding: 12px; margin: 8px 0; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; }
         .btn-gold { background: var(--gold); color: black; border: none; width: 100%; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-delete { background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: auto; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 5px; }
 
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
         .nav-btn { color: #666; text-align: center; flex: 1; font-size: 12px; cursor: pointer; position: relative; }
@@ -66,8 +65,6 @@
 
     <div id="home" class="page active">
         <div class="ads-slider" id="adSlider"></div>
-        <div id="videoAdContainer" class="video-ad-section" style="display:none;"></div>
-
         <div class="category-menu">
             <div class="cat-btn active" onclick="filterProducts('هەمووی', this)">هەمووی</div>
             <div class="cat-btn" onclick="filterProducts('بۆنی جسم', this)">بۆنی جسم</div>
@@ -81,6 +78,12 @@
     <div id="cartPage" class="page">
         <h2 style="color:var(--gold)">سەبەتەی کڕین 🛒</h2>
         <div id="cartList"></div>
+        
+        <div class="coupon-box" id="couponArea" style="display:none;">
+            <input type="text" id="couponInput" placeholder="کۆدی داشکاندن بنووسە...">
+            <button class="btn-apply" onclick="applyCoupon()">داشکان بکە</button>
+        </div>
+
         <div id="cartTotal" style="margin: 20px 0; font-size: 18px; text-align: center; color: var(--gold);"></div>
         <button class="btn-gold" onclick="sendToWhatsApp()" id="orderBtn" style="display:none;">ناردنی داواکاری بۆ وەتسئاپ 📱</button>
     </div>
@@ -93,19 +96,9 @@
 
         <div id="adminArea" style="display:none;">
             <div class="admin-section">
-                <h3 style="color:var(--gold)">بەڕێوەبردنی ڕیکلامەکان</h3>
-                <input type="text" id="adImgUrl" placeholder="لینکی وێنەی ڕیکلام">
-                <button class="btn-gold" onclick="addAd()">زیادکردنی ڕیکلام</button>
-                <div id="adminAdList" style="margin-top:10px;"></div>
-                <hr style="border:0.5px solid #333; margin:20px 0;">
-                <input type="text" id="videoUrl" placeholder="لینکی ڤیدیۆی YouTube">
-                <button class="btn-gold" style="background:#2ecc71;" onclick="updateVideo()">تازەکردنەوەی ڤیدیۆ</button>
-            </div>
-
-            <div class="admin-section">
                 <h3 style="color:var(--gold)">بڵاوکردنەوەی شتی نوێ</h3>
                 <div class="admin-form">
-                    <input type="text" id="pName" placeholder="ناو">
+                    <input type="text" id="pName" placeholder="ناوی بەرهەم">
                     <input type="text" id="pPrice" placeholder="نرخ (تەنها ژمارە)">
                     <select id="pCat">
                         <option value="بۆنی جسم">بۆنی جسم</option>
@@ -116,8 +109,10 @@
                     <input type="text" id="pImg" placeholder="لینکی وێنە">
                     <button class="btn-gold" onclick="saveProduct()">بڵاوکردنەوە</button>
                 </div>
-                <div id="adminProductList" style="margin-top:10px;"></div>
             </div>
+
+            <h3 style="color:var(--gold); padding:10px;">لیستی هەموو پۆستەکان</h3>
+            <div id="adminProductList"></div>
         </div>
     </div>
 
@@ -140,6 +135,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let cart = JSON.parse(localStorage.getItem('zm_cart')) || [];
+        let discount = 0;
 
         function showPage(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -156,52 +152,19 @@
             } else { alert("هەڵەیە!"); }
         }
 
-        // Ads Logic
-        function addAd() {
-            const url = document.getElementById('adImgUrl').value;
-            if(url) db.ref('ads').push().set({img: url}, () => { document.getElementById('adImgUrl').value=''; });
-        }
-        function updateVideo() {
-            const url = document.getElementById('videoUrl').value;
-            db.ref('settings/video').set(url);
-        }
-
-        db.ref('ads').on('value', snap => {
-            const ads = snap.val();
-            const slider = document.getElementById('adSlider');
-            const adminAdList = document.getElementById('adminAdList');
-            slider.innerHTML = ''; adminAdList.innerHTML = '';
-            if(ads) {
-                Object.keys(ads).forEach((key, index) => {
-                    slider.innerHTML += `<img src="${ads[key].img}" class="ad-slide ${index===0?'active':''}">`;
-                    adminAdList.innerHTML += `<div class="admin-item"><img src="${ads[key].img}"><button class="btn-delete" onclick="db.ref('ads/${key}').remove()">سڕینەوە</button></div>`;
-                });
-                startSlider();
+        // Coupon Logic
+        function applyCoupon() {
+            const code = document.getElementById('couponInput').value.toUpperCase();
+            if(code === "ZM10") { // لێرە دەتوانی کۆدی داشکانەکە بگۆڕیت
+                discount = 0.10; // 10% داشکاندن
+                alert("پیرۆزە! 10% داشکانت بۆ کرا.");
+                updateCartUI();
+            } else {
+                alert("کۆدەکە هەڵەیە!");
             }
-        });
-
-        db.ref('settings/video').on('value', snap => {
-            const url = snap.val();
-            const container = document.getElementById('videoAdContainer');
-            if(url) {
-                container.style.display = 'block';
-                container.innerHTML = `<div class="video-container"><iframe src="${url}" frameborder="0" allowfullscreen></iframe></div>`;
-            } else { container.style.display = 'none'; }
-        });
-
-        function startSlider() {
-            let current = 0;
-            setInterval(() => {
-                const slides = document.querySelectorAll('.ad-slide');
-                if(slides.length > 1) {
-                    slides[current].classList.remove('active');
-                    current = (current + 1) % slides.length;
-                    slides[current].classList.add('active');
-                }
-            }, 4000);
         }
 
-        // Products & Cart Logic
+        // Display Products
         db.ref('products').on('value', (snap) => {
             const data = snap.val();
             const grid = document.getElementById('productGrid');
@@ -212,17 +175,30 @@
                     const p = data[key];
                     grid.innerHTML += `
                         <div class="item-card" data-cat="${p.cat}">
-                            <div class="img-container">
-                                <img src="${p.img}">
-                                <div class="watermark">ZM STORE</div>
-                            </div>
+                            <div class="img-container"><img src="${p.img}"><div class="watermark">ZM STORE</div></div>
                             <div class="item-info">
                                 <b>${p.name}</b><br>
                                 <span class="price">${p.price} د.ع</span>
                                 <button class="add-to-cart" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">زیادکردن 🛒</button>
                             </div>
                         </div>`;
-                    adminList.innerHTML += `<div class="admin-item"><img src="${p.img}"><span>${p.name}</span><button class="btn-delete" onclick="db.ref('products/${key}').remove()">سڕینەوە</button></div>`;
+                    
+                    // لیستی پۆستەکان لە بەشی ئەدمین بە زانیاری تەواوەوە
+                    adminList.innerHTML += `
+                        <div class="admin-item">
+                            <div class="admin-top">
+                                <img src="${p.img}">
+                                <div>
+                                    <b style="color:var(--gold)">${p.name}</b><br>
+                                    <span style="font-size:11px;">بەش: ${p.cat}</span>
+                                </div>
+                            </div>
+                            <div class="admin-details">
+                                نرخ: ${p.price} د.ع <br>
+                                لینک: <span style="color:#666; font-size:10px;">${p.img.substring(0,30)}...</span>
+                            </div>
+                            <button class="btn-delete" onclick="db.ref('products/${key}').remove()">ئەم پۆستە ڕەش بکەرەوە</button>
+                        </div>`;
                 });
             }
         });
@@ -241,8 +217,10 @@
         function updateCartUI() {
             const list = document.getElementById('cartList');
             const totalDiv = document.getElementById('cartTotal');
+            const couponArea = document.getElementById('couponArea');
             list.innerHTML = cart.length ? '' : '<p style="text-align:center;color:#666;margin-top:50px;">سەبەتەکەت چۆڵە</p>';
-            let total = 0;
+            
+            let subtotal = 0;
             cart.forEach((item, index) => {
                 list.innerHTML += `
                     <div class="cart-item">
@@ -250,9 +228,21 @@
                         <div style="flex:1"><b>${item.name}</b><br><small style="color:var(--gold)">${item.price} د.ع</small></div>
                         <button onclick="removeFromCart(${index})" style="background:none;border:none;color:red;font-size:20px;">×</button>
                     </div>`;
-                total += parseInt(item.price.replace(/,/g, '')) || 0;
+                subtotal += parseInt(item.price.replace(/,/g, '')) || 0;
             });
-            totalDiv.innerText = cart.length ? `کۆی گشتی: ${total.toLocaleString()} د.ع` : '';
+
+            if(cart.length > 0) {
+                couponArea.style.display = "flex";
+                let finalTotal = subtotal - (subtotal * discount);
+                totalDiv.innerHTML = `
+                    کۆی گشتی: ${subtotal.toLocaleString()} د.ع <br>
+                    ${discount > 0 ? `<span style="color:#2ecc71; font-size:14px;">داشکاندن (10%): -${(subtotal * discount).toLocaleString()} د.ع</span><br>
+                    <span style="font-weight:bold;">کۆی کۆتایی: ${finalTotal.toLocaleString()} د.ع</span>` : ''}
+                `;
+            } else {
+                couponArea.style.display = "none";
+                totalDiv.innerText = "";
+            }
             document.getElementById('orderBtn').style.display = cart.length ? 'block' : 'none';
         }
 
@@ -264,13 +254,15 @@
         }
 
         function sendToWhatsApp() {
+            let subtotal = 0;
             let msg = "سڵاو ZM STORE، ئەم داواکارییانەم هەیە:\n\n";
-            let total = 0;
             cart.forEach((item, i) => {
                 msg += `${i+1}. ${item.name} - ${item.price} د.ع\n`;
-                total += parseInt(item.price.replace(/,/g, '')) || 0;
+                subtotal += parseInt(item.price.replace(/,/g, '')) || 0;
             });
-            msg += `\nکۆی گشتی: ${total.toLocaleString()} د.ع`;
+            let finalTotal = subtotal - (subtotal * discount);
+            if(discount > 0) msg += `\nداشکاندنی 10% بەکار هاتوووە`;
+            msg += `\nبڕی کۆتایی بۆ پارەدان: ${finalTotal.toLocaleString()} د.ع`;
             window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
