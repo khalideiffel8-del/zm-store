@@ -38,9 +38,14 @@
         .watermark { position: absolute; bottom: 8px; left: 8px; background: rgba(212, 175, 55, 0.8); color: black; font-weight: bold; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
 
         .item-info { padding: 10px; }
-        .price { color: var(--gold); font-weight: bold; }
+        .price { color: var(--gold); font-weight: bold; margin-bottom: 8px; display: block; }
+        .add-to-cart { background: var(--gold); color: black; border: none; width: 100%; padding: 8px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Admin Management */
+        /* Cart Styles */
+        .cart-item { display: flex; gap: 10px; background: #111; padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #222; align-items: center; }
+        .cart-item img { width: 50px; height: 50px; border-radius: 5px; object-fit: cover; }
+
+        /* Admin Styles */
         .admin-section { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
         .admin-item { display: flex; align-items: center; background: #0a0a0a; margin-bottom: 8px; padding: 8px; border-radius: 8px; }
         .admin-item img { width: 40px; height: 40px; border-radius: 4px; margin-left: 10px; }
@@ -49,9 +54,10 @@
         .btn-gold { background: var(--gold); color: black; border: none; width: 100%; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-delete { background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: auto; }
 
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
-        .nav-btn { color: #666; text-align: center; flex: 1; font-size: 12px; cursor: pointer; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
+        .nav-btn { color: #666; text-align: center; flex: 1; font-size: 12px; cursor: pointer; position: relative; }
         .nav-btn.active { color: var(--gold); }
+        .badge { position: absolute; top: -5px; right: 20%; background: red; color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -60,7 +66,6 @@
 
     <div id="home" class="page active">
         <div class="ads-slider" id="adSlider"></div>
-
         <div id="videoAdContainer" class="video-ad-section" style="display:none;"></div>
 
         <div class="category-menu">
@@ -73,6 +78,13 @@
         <div id="productGrid" class="grid" style="margin-top:10px;"></div>
     </div>
 
+    <div id="cartPage" class="page">
+        <h2 style="color:var(--gold)">سەبەتەی کڕین 🛒</h2>
+        <div id="cartList"></div>
+        <div id="cartTotal" style="margin: 20px 0; font-size: 18px; text-align: center; color: var(--gold);"></div>
+        <button class="btn-gold" onclick="sendToWhatsApp()" id="orderBtn" style="display:none;">ناردنی داواکاری بۆ وەتسئاپ 📱</button>
+    </div>
+
     <div id="admin" class="page">
         <div id="loginArea">
             <input type="password" id="adminPass" placeholder="پاسۆرد" style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px;">
@@ -82,19 +94,19 @@
         <div id="adminArea" style="display:none;">
             <div class="admin-section">
                 <h3 style="color:var(--gold)">بەڕێوەبردنی ڕیکلامەکان</h3>
-                <input type="text" id="adImgUrl" placeholder="لینکی وێنەی ڕیکلام (Banner)" style="width:100%; padding:10px; background:#000; color:white; border:1px solid #444; border-radius:8px;">
-                <button class="btn-gold" style="margin-top:8px; padding:10px;" onclick="addAd()">زیادکردنی ڕیکلام</button>
+                <input type="text" id="adImgUrl" placeholder="لینکی وێنەی ڕیکلام">
+                <button class="btn-gold" onclick="addAd()">زیادکردنی ڕیکلام</button>
                 <div id="adminAdList" style="margin-top:10px;"></div>
                 <hr style="border:0.5px solid #333; margin:20px 0;">
-                <input type="text" id="videoUrl" placeholder="لینکی ڤیدیۆی YouTube (Embed Link)" style="width:100%; padding:10px; background:#000; color:white; border:1px solid #444; border-radius:8px;">
-                <button class="btn-gold" style="margin-top:8px; background:#2ecc71;" onclick="updateVideo()">تازەکردنەوەی ڤیدیۆ</button>
+                <input type="text" id="videoUrl" placeholder="لینکی ڤیدیۆی YouTube">
+                <button class="btn-gold" style="background:#2ecc71;" onclick="updateVideo()">تازەکردنەوەی ڤیدیۆ</button>
             </div>
 
             <div class="admin-section">
                 <h3 style="color:var(--gold)">بڵاوکردنەوەی شتی نوێ</h3>
                 <div class="admin-form">
                     <input type="text" id="pName" placeholder="ناو">
-                    <input type="text" id="pPrice" placeholder="نرخ">
+                    <input type="text" id="pPrice" placeholder="نرخ (تەنها ژمارە)">
                     <select id="pCat">
                         <option value="بۆنی جسم">بۆنی جسم</option>
                         <option value="دژە خۆر">دژە خۆر</option>
@@ -111,6 +123,7 @@
 
     <div class="nav-bottom">
         <div class="nav-btn active" onclick="showPage('home', this)">🏠<br>سەرەکی</div>
+        <div class="nav-btn" onclick="showPage('cartPage', this)">🛒<br>سەبەتە <span id="cartCount" class="badge">0</span></div>
         <div class="nav-btn" onclick="showPage('admin', this)">👤<br>ئەدمین</div>
     </div>
 
@@ -126,12 +139,14 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        let cart = JSON.parse(localStorage.getItem('zm_cart')) || [];
 
         function showPage(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
+            if(id === 'cartPage') updateCartUI();
         }
 
         function checkLogin() {
@@ -159,7 +174,7 @@
             if(ads) {
                 Object.keys(ads).forEach((key, index) => {
                     slider.innerHTML += `<img src="${ads[key].img}" class="ad-slide ${index===0?'active':''}">`;
-                    adminAdList.innerHTML += `<div class="admin-item"><img src="${ads[key].img}"><button class="btn-delete" onclick="db.ref('ads/${key}').remove()">ڕەشکردنەوە</button></div>`;
+                    adminAdList.innerHTML += `<div class="admin-item"><img src="${ads[key].img}"><button class="btn-delete" onclick="db.ref('ads/${key}').remove()">سڕینەوە</button></div>`;
                 });
                 startSlider();
             }
@@ -178,15 +193,15 @@
             let current = 0;
             setInterval(() => {
                 const slides = document.querySelectorAll('.ad-slide');
-                if(slides.length > 0) {
+                if(slides.length > 1) {
                     slides[current].classList.remove('active');
                     current = (current + 1) % slides.length;
                     slides[current].classList.add('active');
                 }
-            }, 3000);
+            }, 4000);
         }
 
-        // Products Logic
+        // Products & Cart Logic
         db.ref('products').on('value', (snap) => {
             const data = snap.val();
             const grid = document.getElementById('productGrid');
@@ -195,15 +210,76 @@
             if(data) {
                 Object.keys(data).reverse().forEach(key => {
                     const p = data[key];
-                    grid.innerHTML += `<div class="item-card" data-cat="${p.cat}"><div class="img-container"><img src="${p.img}"><div class="watermark">ZM STORE</div></div><div class="item-info"><b>${p.name}</b><br><span class="price">${p.price} د.ع</span></div></div>`;
-                    adminList.innerHTML += `<div class="admin-item"><img src="${p.img}"><span>${p.name}</span><button class="btn-delete" onclick="db.ref('products/${key}').remove()">ڕەشکردنەوە</button></div>`;
+                    grid.innerHTML += `
+                        <div class="item-card" data-cat="${p.cat}">
+                            <div class="img-container">
+                                <img src="${p.img}">
+                                <div class="watermark">ZM STORE</div>
+                            </div>
+                            <div class="item-info">
+                                <b>${p.name}</b><br>
+                                <span class="price">${p.price} د.ع</span>
+                                <button class="add-to-cart" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">زیادکردن 🛒</button>
+                            </div>
+                        </div>`;
+                    adminList.innerHTML += `<div class="admin-item"><img src="${p.img}"><span>${p.name}</span><button class="btn-delete" onclick="db.ref('products/${key}').remove()">سڕینەوە</button></div>`;
                 });
             }
         });
 
+        function addToCart(name, price, img) {
+            cart.push({name, price, img});
+            localStorage.setItem('zm_cart', JSON.stringify(cart));
+            updateCartCount();
+            alert("بۆ سەبەتە زیاد کرا");
+        }
+
+        function updateCartCount() {
+            document.getElementById('cartCount').innerText = cart.length;
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            const totalDiv = document.getElementById('cartTotal');
+            list.innerHTML = cart.length ? '' : '<p style="text-align:center;color:#666;margin-top:50px;">سەبەتەکەت چۆڵە</p>';
+            let total = 0;
+            cart.forEach((item, index) => {
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}">
+                        <div style="flex:1"><b>${item.name}</b><br><small style="color:var(--gold)">${item.price} د.ع</small></div>
+                        <button onclick="removeFromCart(${index})" style="background:none;border:none;color:red;font-size:20px;">×</button>
+                    </div>`;
+                total += parseInt(item.price.replace(/,/g, '')) || 0;
+            });
+            totalDiv.innerText = cart.length ? `کۆی گشتی: ${total.toLocaleString()} د.ع` : '';
+            document.getElementById('orderBtn').style.display = cart.length ? 'block' : 'none';
+        }
+
+        function removeFromCart(i) {
+            cart.splice(i, 1);
+            localStorage.setItem('zm_cart', JSON.stringify(cart));
+            updateCartUI();
+            updateCartCount();
+        }
+
+        function sendToWhatsApp() {
+            let msg = "سڵاو ZM STORE، ئەم داواکارییانەم هەیە:\n\n";
+            let total = 0;
+            cart.forEach((item, i) => {
+                msg += `${i+1}. ${item.name} - ${item.price} د.ع\n`;
+                total += parseInt(item.price.replace(/,/g, '')) || 0;
+            });
+            msg += `\nکۆی گشتی: ${total.toLocaleString()} د.ع`;
+            window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
         function saveProduct() {
             const p = { name: document.getElementById('pName').value, price: document.getElementById('pPrice').value, cat: document.getElementById('pCat').value, img: document.getElementById('pImg').value };
-            if(p.name && p.price) db.ref('products').push().set(p, () => { alert("بڵاوکرایەوە"); });
+            if(p.name && p.price) db.ref('products').push().set(p, () => { 
+                alert("بڵاوکرایەوە"); 
+                document.getElementById('pName').value = ''; document.getElementById('pPrice').value = ''; document.getElementById('pImg').value = '';
+            });
         }
 
         function filterProducts(cat, btn) {
@@ -213,6 +289,8 @@
                 card.style.display = (cat === 'هەمووی' || card.getAttribute('data-cat') === cat) ? 'block' : 'none';
             });
         }
+
+        updateCartCount();
     </script>
 </body>
 </html>
