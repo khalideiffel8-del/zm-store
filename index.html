@@ -7,38 +7,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #d4af37; --bg: #000; --card: #111; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 80px; }
-        
-        .header { text-align: center; padding: 15px; border-bottom: 1px solid #333; color: var(--gold); background: #0a0a0a; }
-
-        /* Pages */
-        .page { display: none; padding: 10px; }
-        .page.active { display: block; }
-
-        /* Slider */
-        .ads-slider { width: 100%; height: 180px; background: #050505; position: relative; overflow: hidden; border-bottom: 1px solid var(--gold); }
-        .ad-slide { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .ad-slide.active { display: block; }
-
-        /* Product Grid */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; position: relative; }
-        .card img { width: 100%; height: 160px; object-fit: cover; }
-        .info { padding: 10px; text-align: center; }
-        .price { color: var(--gold); font-weight: bold; }
-
-        /* Admin UI */
-        .admin-box { background: #111; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; box-sizing: border-box; }
-        .btn-gold { background: var(--gold); color: #000; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-        .admin-item { display: flex; align-items: center; justify-content: space-between; background: #0a0a0a; padding: 10px; margin-top: 8px; border-radius: 8px; border: 1px solid #222; }
-        .btn-del { background: #ff4d4d; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-
-        /* Bottom Nav */
-        .nav { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; padding: 10px 0; border-top: 1px solid #333; z-index: 100; }
-        .nav-item { flex: 1; text-align: center; color: #666; font-size: 12px; cursor: pointer; }
+        :root { --gold: #d4af37; --bg: #000; }
+        body { background: var(--bg); color: #fff; font-family: Arial, sans-serif; margin: 0; padding-bottom: 70px; }
+        .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--gold); color: var(--gold); }
+        .page { display: none; padding: 15px; }
+        .active { display: block; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; text-align: center; }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .box { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
+        input { width: 100%; padding: 10px; margin: 5px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--gold); border: none; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 5px; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; border-top: 1px solid #333; }
+        .nav-item { flex: 1; text-align: center; padding: 10px; color: #666; cursor: pointer; }
         .nav-item.active { color: var(--gold); }
+        .item-row { display: flex; justify-content: space-between; background: #000; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -46,49 +29,40 @@
 <div class="header"><h1>ZM STORE</h1></div>
 
 <div id="home" class="page active">
-    <div class="ads-slider" id="slider"></div>
-    <div id="vid-box" style="padding:10px; display:none;"></div>
-    <div class="grid" id="products"></div>
+    <div id="slider" style="height:150px; background:#050505; margin-bottom:10px;"></div>
+    <div class="grid" id="product-list"></div>
 </div>
 
 <div id="admin" class="page">
-    <div id="login-section">
-        <h2 style="text-align:center; color:var(--gold);">چوونەژوورەوەی ئەدمین</h2>
-        <input type="password" id="admin-pass" placeholder="پاسۆرد لێرە بنووسە...">
-        <button class="btn-gold" onclick="login()">داخڵبوون</button>
+    <div id="login-form">
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="checkPass()">Login</button>
     </div>
-
-    <div id="admin-content" style="display:none;">
-        <div class="admin-box">
+    <div id="admin-panel" style="display:none;">
+        <div class="box">
             <h3>ڕیکلام و ڤیدیۆ</h3>
-            <input type="text" id="v-url" placeholder="لینکی ڤیدیۆ (.mp4)">
-            <button class="btn-gold" onclick="setVideo()" style="background:#28a745; color:#fff;">تازەکردنەوەی ڤیدیۆ</button>
-            <hr style="margin:15px 0; border:0.5px solid #333;">
-            <input type="text" id="a-url" placeholder="لینکی وێنەی نوێ بۆ سڵایدەر">
-            <button class="btn-gold" onclick="addSliderImg()">زیادکردنی وێنە</button>
-            <div id="ad-list"></div>
+            <input type="text" id="v-url" placeholder="Video Link (.mp4)">
+            <button onclick="saveVid()">Update Video</button>
+            <input type="text" id="a-url" placeholder="Image Link" style="margin-top:10px;">
+            <button onclick="addAd()">Add Slider Image</button>
         </div>
-
-        <div class="admin-box">
-            <h3>بڵاوکردنەوەی بەرهەم</h3>
-            <input type="text" id="p-name" placeholder="ناوی بەرهەم">
-            <input type="text" id="p-price" placeholder="نرخ (بۆ نموونە: 15,000)">
-            <input type="text" id="p-img" placeholder="لینکی وێنە">
-            <button class="btn-gold" onclick="addProduct()">بڵاوکردنەوە</button>
+        <div class="box">
+            <h3>بەرهەمی نوێ</h3>
+            <input type="text" id="p-n" placeholder="Name">
+            <input type="text" id="p-p" placeholder="Price">
+            <input type="text" id="p-i" placeholder="Image URL">
+            <button onclick="addP()">Publish</button>
         </div>
-
-        <h3 style="color:var(--gold)">لیستی بەرهەمەکان</h3>
-        <div id="admin-p-list"></div>
+        <div id="admin-items"></div>
     </div>
 </div>
 
 <div class="nav">
-    <div class="nav-item active" id="btn-home" onclick="changeTab('home')">🏠<br>سەرەکی</div>
-    <div class="nav-item" id="btn-admin" onclick="changeTab('admin')">👤<br>ئەدمین</div>
+    <div class="nav-item active" id="n-home" onclick="show('home')">🏠<br>Home</div>
+    <div class="nav-item" id="n-admin" onclick="show('admin')">👤<br>Admin</div>
 </div>
 
 <script>
-    // Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
         databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
@@ -97,103 +71,49 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Tab Switching
-    function changeTab(id) {
+    function show(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.getElementById('btn-' + id).classList.add('active');
+        document.getElementById('n-' + id).classList.add('active');
     }
 
-    // Admin Login
-    function login() {
-        const pass = document.getElementById('admin-pass').value;
-        if(pass === '75331541') {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('admin-content').style.display = 'block';
-        } else {
-            alert("پاسۆرد هەڵەیە!");
-        }
+    function checkPass() {
+        if(document.getElementById('pass').value === '75331541') {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+        } else { alert("هەڵەیە!"); }
     }
 
-    // Video Management
-    function setVideo() {
-        const url = document.getElementById('v-url').value;
-        db.ref('settings/video').set(url, () => alert("ڤیدیۆ نوێکرایەوە"));
-    }
-
-    db.ref('settings/video').on('value', s => {
-        const url = s.val();
-        const box = document.getElementById('vid-box');
-        if(url) {
-            box.style.display = 'block';
-            box.innerHTML = `<video src="${url}" style="width:100%; border-radius:10px; border:1px solid #d4af37;" autoplay muted loop controls></video>`;
-        } else {
-            box.style.display = 'none';
-        }
-    });
-
-    // Slider Management
-    function addSliderImg() {
-        const url = document.getElementById('a-url').value;
-        if(url) db.ref('ads').push().set({img: url}, () => { document.getElementById('a-url').value = ''; });
-    }
-
-    db.ref('ads').on('value', s => {
-        const data = s.val();
-        const slider = document.getElementById('slider');
-        const list = document.getElementById('ad-list');
-        slider.innerHTML = ''; list.innerHTML = '';
-        if(data) {
-            Object.keys(data).forEach((k, i) => {
-                slider.innerHTML += `<img src="${data[k].img}" class="ad-slide ${i===0?'active':''}">`;
-                list.innerHTML += `<div class="admin-item"><span>وێنەی ڕیکلام ${i+1}</span><button class="btn-del" onclick="db.ref('ads/${k}').remove()">سڕینەوە</button></div>`;
-            });
-            startAutoSlider();
-        }
-    });
-
-    // Product Management
-    function addProduct() {
-        const name = document.getElementById('p-name').value;
-        const price = document.getElementById('p-price').value;
-        const img = document.getElementById('p-img').value;
-        if(name && price && img) {
-            db.ref('products').push().set({name, price, img}, () => {
-                alert("بەرهەم زیادکرا!");
-                document.getElementById('p-name').value = '';
-                document.getElementById('p-price').value = '';
-                document.getElementById('p-img').value = '';
-            });
-        }
+    function saveVid() { db.ref('settings/v').set(document.getElementById('v-url').value); }
+    function addAd() { db.ref('ads').push().set({img: document.getElementById('a-url').value}); }
+    function addP() {
+        const n = document.getElementById('p-n').value;
+        const p = document.getElementById('p-p').value;
+        const i = document.getElementById('p-i').value;
+        if(n && p && i) db.ref('products').push().set({n, p, i});
     }
 
     db.ref('products').on('value', s => {
-        const data = s.val();
-        const grid = document.getElementById('products');
-        const adminList = document.getElementById('admin-p-list');
-        grid.innerHTML = ''; adminList.innerHTML = '';
-        if(data) {
-            Object.keys(data).reverse().forEach(k => {
-                const p = data[k];
-                grid.innerHTML += `<div class="card"><img src="${p.img}"><div class="info"><b>${p.name}</b><br><span class="price">${p.price} د.ع</span></div></div>`;
-                adminList.innerHTML += `<div class="admin-item"><span>${p.name}</span><button class="btn-del" onclick="db.ref('products/${k}').remove()">سڕینەوە</button></div>`;
-            });
-        }
+        const d = s.val();
+        const list = document.getElementById('product-list');
+        const aList = document.getElementById('admin-items');
+        list.innerHTML = ''; aList.innerHTML = '';
+        if(d) Object.keys(d).reverse().forEach(k => {
+            const x = d[k];
+            list.innerHTML += `<div class="card"><img src="${x.i}"><div style="padding:5px;"><b>${x.n}</b><br><span style="color:#d4af37">${x.p}</span></div></div>`;
+            aList.innerHTML += `<div class="item-row"><span>${x.n}</span><button style="width:auto; background:red; padding:5px;" onclick="db.ref('products/${k}').remove()">X</button></div>`;
+        });
     });
 
-    // Auto Slider Logic
-    function startAutoSlider() {
-        clearInterval(window.sliderInterval);
-        window.sliderInterval = setInterval(() => {
-            const slides = document.querySelectorAll('.ad-slide');
-            if(slides.length < 2) return;
-            let activeIdx = [...slides].findIndex(s => s.classList.contains('active'));
-            slides[activeIdx].classList.remove('active');
-            slides[(activeIdx + 1) % slides.length].classList.add('active');
-        }, 4000);
-    }
+    db.ref('ads').on('value', s => {
+        const d = s.val();
+        const slider = document.getElementById('slider');
+        if(d) {
+            const first = Object.values(d)[0].img;
+            slider.innerHTML = `<img src="${first}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
+    });
 </script>
-
 </body>
 </html>
