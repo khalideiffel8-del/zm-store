@@ -8,58 +8,70 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
         :root { --gold: #d4af37; --bg: #000; }
-        body { background: var(--bg); color: #fff; font-family: Arial, sans-serif; margin: 0; padding-bottom: 70px; }
+        body { background: var(--bg); color: #fff; font-family: Arial, sans-serif; margin: 0; padding-bottom: 80px; }
         .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--gold); color: var(--gold); }
-        .page { display: none; padding: 15px; }
+        .page { display: none; padding: 10px; }
         .active { display: block; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; text-align: center; }
-        .card img { width: 100%; height: 150px; object-fit: cover; }
-        .box { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
-        input { width: 100%; padding: 10px; margin: 5px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--gold); border: none; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 5px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; border-top: 1px solid #333; }
-        .nav-item { flex: 1; text-align: center; padding: 10px; color: #666; cursor: pointer; }
+        .card { background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; text-align: center; position: relative; }
+        .card img { width: 100%; height: 160px; object-fit: cover; }
+        .btn-add { background: var(--gold); border: none; width: 100%; padding: 10px; font-weight: bold; cursor: pointer; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; border-top: 1px solid #333; z-index: 100; }
+        .nav-item { flex: 1; text-align: center; padding: 12px; color: #666; cursor: pointer; font-size: 12px; }
         .nav-item.active { color: var(--gold); }
-        .item-row { display: flex; justify-content: space-between; background: #000; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #222; }
+        .badge { background: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 10px; position: absolute; top: 5px; right: 25%; }
+        .admin-box { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
+        input { width: 100%; padding: 12px; margin: 5px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; box-sizing: border-box; }
+        .cart-item { display: flex; align-items: center; justify-content: space-between; background: #111; padding: 10px; margin-bottom: 5px; border-radius: 8px; }
     </style>
 </head>
 <body>
 
 <div class="header"><h1>ZM STORE</h1></div>
 
-<div id="home" class="page active">
-    <div id="slider" style="height:150px; background:#050505; margin-bottom:10px;"></div>
+<div id="p-home" class="page active">
+    <div id="slider" style="width:100%; height:180px; background:#111; margin-bottom:10px;"></div>
     <div class="grid" id="product-list"></div>
 </div>
 
-<div id="admin" class="page">
-    <div id="login-form">
-        <input type="password" id="pass" placeholder="Password">
-        <button onclick="checkPass()">Login</button>
+<div id="p-cart" class="page">
+    <h2 style="color:var(--gold); text-align:center;">سەبەتەی کڕین</h2>
+    <div id="cart-list"></div>
+    <div style="margin-top:20px; text-align:center;">
+        <input type="text" id="coupon" placeholder="کۆدی داشکاندن (zako)" style="width:70%;">
+        <button onclick="applyCoupon()" style="padding:10px; background:green; color:white; border:none; border-radius:5px;">بەکارهێنان</button>
+        <h3 id="total-price" style="color:var(--gold); margin-top:15px;">کۆی گشتی: 0 د.ع</h3>
+        <button onclick="sendWA()" style="background:#25D366; color:white; padding:15px; width:100%; border-radius:10px; font-weight:bold; border:none;">ناردنی داواکاری بۆ وەتسئاپ 📱</button>
     </div>
-    <div id="admin-panel" style="display:none;">
-        <div class="box">
-            <h3>ڕیکلام و ڤیدیۆ</h3>
-            <input type="text" id="v-url" placeholder="Video Link (.mp4)">
-            <button onclick="saveVid()">Update Video</button>
-            <input type="text" id="a-url" placeholder="Image Link" style="margin-top:10px;">
-            <button onclick="addAd()">Add Slider Image</button>
+</div>
+
+<div id="p-admin" class="page">
+    <div id="login-box">
+        <input type="password" id="pass" placeholder="پاسۆرد">
+        <button class="btn-add" onclick="login()">Login</button>
+    </div>
+    <div id="admin-ui" style="display:none;">
+        <div class="admin-box">
+            <h3>ڕیکلامی سڵایدەر</h3>
+            <input type="text" id="a-url" placeholder="لینکی وێنە">
+            <button class="btn-add" onclick="addAd()">زیادکردن</button>
+            <div id="ad-list"></div>
         </div>
-        <div class="box">
+        <div class="admin-box">
             <h3>بەرهەمی نوێ</h3>
-            <input type="text" id="p-n" placeholder="Name">
-            <input type="text" id="p-p" placeholder="Price">
-            <input type="text" id="p-i" placeholder="Image URL">
-            <button onclick="addP()">Publish</button>
+            <input type="text" id="p-n" placeholder="ناو">
+            <input type="text" id="p-p" placeholder="نرخ (بەس ڕەقەم)">
+            <input type="text" id="p-i" placeholder="لینکی وێنە">
+            <button class="btn-add" onclick="addP()" style="background:green; color:white;">بڵاوکردنەوە</button>
         </div>
         <div id="admin-items"></div>
     </div>
 </div>
 
 <div class="nav">
-    <div class="nav-item active" id="n-home" onclick="show('home')">🏠<br>Home</div>
-    <div class="nav-item" id="n-admin" onclick="show('admin')">👤<br>Admin</div>
+    <div class="nav-item active" id="n-home" onclick="show('p-home')">🏠<br>Home</div>
+    <div class="nav-item" id="n-cart" onclick="show('p-cart')" style="position:relative;">🛒<br>Cart <span id="count" class="badge">0</span></div>
+    <div class="nav-item" id="n-admin" onclick="show('p-admin')">👤<br>Admin</div>
 </div>
 
 <script>
@@ -70,50 +82,84 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    let cart = [];
+    let isFree = false;
 
     function show(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.getElementById('n-' + id).classList.add('active');
+        document.getElementById('n-' + id.split('-')[1]).classList.add('active');
+        if(id === 'p-cart') renderCart();
     }
 
-    function checkPass() {
+    function login() {
         if(document.getElementById('pass').value === '75331541') {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'block';
-        } else { alert("هەڵەیە!"); }
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('admin-ui').style.display = 'block';
+        }
     }
 
-    function saveVid() { db.ref('settings/v').set(document.getElementById('v-url').value); }
-    function addAd() { db.ref('ads').push().set({img: document.getElementById('a-url').value}); }
     function addP() {
-        const n = document.getElementById('p-n').value;
-        const p = document.getElementById('p-p').value;
-        const i = document.getElementById('p-i').value;
-        if(n && p && i) db.ref('products').push().set({n, p, i});
+        const n = document.getElementById('p-n').value, p = document.getElementById('p-p').value, i = document.getElementById('p-i').value;
+        if(n && p && i) db.ref('products').push().set({n, p, i}, () => alert("زیاد کرا"));
+    }
+
+    function addAd() {
+        const u = document.getElementById('a-url').value;
+        if(u) db.ref('ads').push().set({img: u});
     }
 
     db.ref('products').on('value', s => {
         const d = s.val();
-        const list = document.getElementById('product-list');
-        const aList = document.getElementById('admin-items');
+        const list = document.getElementById('product-list'), aList = document.getElementById('admin-items');
         list.innerHTML = ''; aList.innerHTML = '';
         if(d) Object.keys(d).reverse().forEach(k => {
             const x = d[k];
-            list.innerHTML += `<div class="card"><img src="${x.i}"><div style="padding:5px;"><b>${x.n}</b><br><span style="color:#d4af37">${x.p}</span></div></div>`;
-            aList.innerHTML += `<div class="item-row"><span>${x.n}</span><button style="width:auto; background:red; padding:5px;" onclick="db.ref('products/${k}').remove()">X</button></div>`;
+            list.innerHTML += `<div class="card"><img src="${x.i}"><div style="padding:5px;"><b>${x.n}</b><br><span style="color:var(--gold)">${x.p} د.ع</span><br><button class="btn-add" onclick="addToCart('${x.n}', '${x.p}')">🛒 زیادکردن</button></div></div>`;
+            aList.innerHTML += `<div class="cart-item"><span>${x.n}</span><button onclick="db.ref('products/${k}').remove()" style="background:red; color:white; border:none; padding:5px;">X</button></div>`;
         });
     });
 
     db.ref('ads').on('value', s => {
         const d = s.val();
         const slider = document.getElementById('slider');
-        if(d) {
-            const first = Object.values(d)[0].img;
-            slider.innerHTML = `<img src="${first}" style="width:100%; height:100%; object-fit:cover;">`;
-        }
+        if(d) slider.innerHTML = `<img src="${Object.values(d)[0].img}" style="width:100%; height:100%; object-fit:cover;">`;
     });
+
+    function addToCart(n, p) {
+        cart.push({n, p});
+        document.getElementById('count').innerText = cart.length;
+        alert("بۆ سەبەتە زیادکرا");
+    }
+
+    function renderCart() {
+        const list = document.getElementById('cart-list');
+        let total = 0;
+        list.innerHTML = '';
+        cart.forEach((item, index) => {
+            list.innerHTML += `<div class="cart-item"><span>${item.n}</span><span>${item.p} د.ع</span><button onclick="cart.splice(${index},1); renderCart();" style="background:none; color:red; border:none; font-size:18px;">×</button></div>`;
+            total += parseInt(item.p.toString().replace(/,/g, ''));
+        });
+        if(isFree) total = total - 3000;
+        document.getElementById('total-price').innerText = `کۆی گشتی: ${total} د.ع` + (isFree ? " (کۆدی zako کارایە)" : "");
+    }
+
+    function applyCoupon() {
+        if(document.getElementById('coupon').value === 'zako') {
+            isFree = true;
+            renderCart();
+            alert("کۆدەکە کارا بوو! گەیاندن خۆڕایی + ٣٠٠٠ کاشباک");
+        }
+    }
+
+    function sendWA() {
+        if(cart.length === 0) return alert("سەبەتەکە چۆڵە!");
+        let text = "سڵاو ZM STORE، ئەم داواکاریانەم هەیە:\n\n";
+        cart.forEach(i => text += `- ${i.n} (${i.p} د.ع)\n`);
+        text += `\nکۆدی zako: ${isFree ? 'بەڵێ' : 'نەخێر'}`;
+        window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(text)}`);
+    }
 </script>
 </body>
 </html>
