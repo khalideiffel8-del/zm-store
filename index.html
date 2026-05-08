@@ -8,52 +8,59 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
         :root { --gold: #d4af37; --bg: #000000; --card: #111111; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 90px; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 90px; }
         
         .header { text-align: center; padding: 15px; background: #0a0a0a; border-bottom: 1px solid #333; }
-        .header h1 { color: var(--gold); margin: 0; letter-spacing: 3px; font-size: 24px; text-transform: uppercase; }
+        .header h1 { color: var(--gold); margin: 0; letter-spacing: 3px; font-size: 24px; }
 
         /* Ads Slider */
-        .ads-slider { width: 100%; height: 220px; overflow: hidden; position: relative; background: #050505; border-bottom: 2px solid var(--gold); }
+        .ads-slider { width: 100%; height: 200px; overflow: hidden; position: relative; background: #050505; border-bottom: 2px solid var(--gold); }
         .ad-slide { width: 100%; height: 100%; display: none; object-fit: cover; }
-        .ad-slide.active { display: block; animation: fadeIn 0.8s; }
+        .ad-slide.active { display: block; }
+
+        /* Search Box */
+        .search-area { padding: 10px; display: flex; gap: 8px; }
+        .search-input { flex: 1; background: #111; border: 1px solid #333; color: white; padding: 10px; border-radius: 20px; outline: none; }
 
         /* Category Menu */
-        .category-menu { display: flex; overflow-x: auto; padding: 15px 10px; gap: 10px; background: #000; position: sticky; top: 0; z-index: 100; scrollbar-width: none; }
+        .category-menu { display: flex; overflow-x: auto; padding: 10px; gap: 10px; background: #000; position: sticky; top: 0; z-index: 100; scrollbar-width: none; }
         .category-menu::-webkit-scrollbar { display: none; }
-        .cat-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 10px 20px; border-radius: 25px; white-space: nowrap; cursor: pointer; font-size: 14px; transition: 0.3s; }
+        .cat-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 8px 18px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 13px; }
         .cat-btn.active { background: var(--gold); color: black; border-color: var(--gold); font-weight: bold; }
 
-        .page { display: none; padding: 15px; animation: fadeIn 0.4s; }
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Product Grid */
+        /* Grid & Cards */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .item-card { background: var(--card); border-radius: 20px; border: 1px solid #222; overflow: hidden; position: relative; transition: 0.3s; }
-        .img-container { position: relative; width: 100%; height: 160px; background: #fff; }
+        .item-card { background: var(--card); border-radius: 15px; border: 1px solid #222; overflow: hidden; position: relative; }
+        .img-container { position: relative; width: 100%; height: 180px; background: #fff; }
         .img-container img { width: 100%; height: 100%; object-fit: contain; }
-        .watermark { position: absolute; bottom: 8px; left: 8px; background: rgba(212, 175, 55, 0.9); color: black; font-weight: bold; font-size: 10px; padding: 3px 7px; border-radius: 5px; }
+        .watermark { position: absolute; bottom: 8px; left: 8px; background: rgba(212, 175, 55, 0.8); color: black; font-weight: bold; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+        .pin-tag { position: absolute; top: 8px; right: 8px; background: #2980b9; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
 
-        .item-info { padding: 12px; text-align: center; }
-        .item-info b { font-size: 15px; display: block; margin-bottom: 5px; color: #eee; }
-        .price { color: var(--gold); font-weight: bold; font-size: 16px; margin-bottom: 10px; display: block; }
-        .add-to-cart { background: var(--gold); color: black; border: none; width: 100%; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .item-info { padding: 10px; text-align: center; }
+        .price { color: var(--gold); font-weight: bold; margin-bottom: 8px; display: block; }
+        .add-to-cart { background: var(--gold); color: black; border: none; width: 100%; padding: 8px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Toast Notification */
-        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 10000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: none; animation: slideUp 0.3s forwards; }
-        @keyframes slideUp { from { bottom: 50px; opacity: 0; } to { bottom: 100px; opacity: 1; } }
+        /* Footer Extras */
+        .footer-extras { text-align: center; padding: 20px; border-top: 1px solid #222; margin-top: 20px; }
+        .social-links a { font-size: 25px; margin: 0 10px; text-decoration: none; }
+        .music-players { margin-top: 15px; display: flex; justify-content: center; gap: 10px; opacity: 0.6; }
 
-        /* Bottom Nav */
+        /* Admin & Cart */
+        .admin-section { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        .admin-list-item { background: #0a0a0a; margin-bottom: 10px; padding: 10px; border-radius: 10px; border: 1px solid #222; display: flex; align-items: center; justify-content: space-between; }
+        .admin-list-item img { width: 40px; height: 40px; border-radius: 5px; }
+        .btn-gold { background: var(--gold); color: black; border: none; width: 100%; padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #0a0a0a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; z-index: 1000; }
-        .nav-btn { color: #666; text-align: center; flex: 1; font-size: 12px; cursor: pointer; position: relative; text-decoration: none; }
+        .nav-btn { color: #666; text-align: center; flex: 1; font-size: 12px; cursor: pointer; position: relative; }
         .nav-btn.active { color: var(--gold); }
-        .badge { position: absolute; top: -5px; right: 20%; background: #e74c3c; color: white; font-size: 11px; padding: 2px 7px; border-radius: 50%; border: 2px solid #0a0a0a; }
+        .badge { position: absolute; top: -5px; right: 20%; background: red; color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; }
 
-        /* Admin & Cart Lists */
-        .cart-item, .admin-list-item { background: #111; padding: 12px; margin-bottom: 10px; border-radius: 15px; border: 1px solid #222; display: flex; align-items: center; gap: 15px; }
-        .cart-item img, .admin-list-item img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
-        .btn-gold { background: var(--gold); color: black; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 10000; display: none; }
     </style>
 </head>
 <body>
@@ -62,31 +69,74 @@
 
     <div id="home" class="page active">
         <div class="ads-slider" id="adSlider"></div>
+
+        <div class="search-area">
+            <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="بۆ چ بەرهەمێک دەگەڕێیت؟..." class="search-input">
+            <button onclick="startAI()" style="background:var(--gold); border:none; border-radius:20px; padding:0 15px; cursor:pointer;">🤖 AI</button>
+        </div>
         
         <div class="category-menu">
             <div class="cat-btn active" onclick="filterProducts('هەمووی', this)">هەمووی</div>
-            <div class="cat-btn" onclick="filterProducts('بۆنی جسم', this)">بۆنی جسم</div>
-            <div class="cat-btn" onclick="filterProducts('دژە خۆر', this)">دژە خۆر</div>
-            <div class="cat-btn" onclick="filterProducts('غسول', this)">غسول</div>
-            <div class="cat-btn" onclick="filterProducts('شامپۆ', this)">شامپۆ</div>
+            <div class="cat-btn" onclick="filterProducts('بۆن', this)">بۆن</div>
+            <div class="cat-btn" onclick="filterProducts('VIP', this)">VIP ⭐</div>
+            <div class="cat-btn" onclick="filterProducts('سپرا', this)">سپرا</div>
+            <div class="cat-btn" onclick="filterProducts('مشەکەل', this)">مشەکەل</div>
+            <div class="cat-btn" onclick="filterProducts('سبخ', this)">سبخ</div>
         </div>
 
         <div id="productGrid" class="grid"></div>
+
+        <div class="footer-extras">
+            <div class="social-links">
+                <a href="https://www.tiktok.com/@zm_parfum2" target="_blank">📱</a>
+                <a href="https://www.instagram.com/z_m_cosmetic" target="_blank">📸</a>
+                <a href="https://wa.me/9647507131541" target="_blank">💬</a>
+            </div>
+            <div class="music-players">
+                <audio controls style="width:120px; height:30px;"><source src="https://youtu.be/BebQwqnk0hM?si=C0L7I45-fn5BHY2b"></audio>
+                <audio controls style="width:120px; height:30px;"><source src="https://youtu.be/n7iuaTlGbd4?si=Z_DuflKVM5nID-17"></audio>
+            </div>
+        </div>
     </div>
 
     <div id="cartPage" class="page">
-        <h2 style="color:var(--gold)">🛒 سەبەتەکەم</h2>
+        <h2 style="color:var(--gold)">سەبەتەی کڕین 🛒</h2>
         <div id="cartList"></div>
+        <textarea id="orderNote" style="width:100%; background:#111; border:1px solid #333; color:white; border-radius:10px; padding:10px; margin-top:15px; display:none;" placeholder="تێبینی بنووسە..."></textarea>
         <div id="cartTotal" style="margin: 20px 0; font-size: 18px; text-align: center; color: var(--gold);"></div>
         <button class="btn-gold" onclick="sendToWhatsApp()" id="orderBtn" style="display:none;">ناردنی داواکاری بۆ وەتسئاپ 📱</button>
     </div>
 
     <div id="admin" class="page">
         <div id="loginArea">
-            <input type="password" id="adminPass" placeholder="پاسۆرد" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:15px; box-sizing: border-box;">
+            <input type="password" id="adminPass" placeholder="پاسۆرد" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:10px;">
             <button class="btn-gold" onclick="checkLogin()">داخڵبوون</button>
         </div>
+
         <div id="adminArea" style="display:none;">
+            <div class="admin-section">
+                <h3 style="color:var(--gold)">زیادکردنی بەرهەم</h3>
+                <input type="text" id="pName" placeholder="ناوی بەرهەم" style="width:100%; padding:10px; margin-bottom:5px;">
+                <input type="text" id="pPrice" placeholder="نرخ (بێ فاریزە)" style="width:100%; padding:10px; margin-bottom:5px;">
+                <select id="pCat" style="width:100%; padding:10px; margin-bottom:5px;">
+                    <option value="بۆن">بۆن</option>
+                    <option value="VIP">VIP</option>
+                    <option value="سپرا">سپرا</option>
+                    <option value="مشەکەل">مشەکەل</option>
+                    <option value="سبخ">سبخ</option>
+                </select>
+                <input type="text" id="pImg" placeholder="لینکی وێنە" style="width:100%; padding:10px; margin-bottom:10px;">
+                <button class="btn-gold" onclick="saveProduct()">بڵاوکردنەوە ✅</button>
+            </div>
+            
+            <div class="admin-section">
+                <h3 style="color:var(--gold)">ڕیکلامی سەرەوە</h3>
+                <input type="text" id="adImgUrl" placeholder="لینکی وێنەی ڕیکلام" style="width:100%; padding:10px; margin-bottom:5px;">
+                <button class="btn-gold" onclick="addAd()">زیادکردنی ڕیکلام</button>
+                <div id="adminAdList" style="margin-top:10px;"></div>
+            </div>
+
+            <h3 style="color:var(--gold)">بەڕێوەبردنی بەرهەمەکان</h3>
             <div id="adminProductList"></div>
         </div>
     </div>
@@ -100,7 +150,7 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // Firebase Configuration (Same as yours)
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
             authDomain: "zm-parfum.firebaseapp.com",
@@ -114,7 +164,7 @@
         const db = firebase.database();
         let cart = JSON.parse(localStorage.getItem('zm_cart')) || [];
 
-        // UI Functions
+        // Global UI
         function showPage(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -125,86 +175,48 @@
 
         function showToast(msg) {
             const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 2000);
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2000);
         }
 
-        // Product Logic
-        db.ref('products').on('value', snap => {
-            const data = snap.val();
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = '';
-            if(data) {
-                Object.keys(data).reverse().forEach(key => {
-                    const p = data[key];
-                    grid.innerHTML += `
-                        <div class="item-card" data-cat="${p.cat}">
-                            <div class="img-container">
-                                <img src="${p.img}">
-                                <div class="watermark">ZM STORE</div>
-                            </div>
-                            <div class="item-info">
-                                <b>${p.name}</b>
-                                <span class="price">${p.price} د.ع</span>
-                                <button class="add-to-cart" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">🛒 زیادکردن</button>
-                            </div>
-                        </div>`;
-                });
-            }
-        });
-
-        function addToCart(name, price, img) {
-            cart.push({name, price, img});
-            localStorage.setItem('zm_cart', JSON.stringify(cart));
-            updateCartCount();
-            showToast("✅ زیاد کرا بۆ سەبەتە");
-        }
-
-        function updateCartCount() {
-            document.getElementById('cartCount').innerText = cart.length;
-        }
-
-        function updateCartUI() {
-            const list = document.getElementById('cartList');
-            const totalDiv = document.getElementById('cartTotal');
-            list.innerHTML = cart.length ? '' : '<p style="text-align:center; color:#666;">سەبەتەکەت چۆڵە</p>';
-            let total = 0;
-            cart.forEach((item, i) => {
-                list.innerHTML += `
-                    <div class="cart-item">
-                        <img src="${item.img}">
-                        <div style="flex:1"><b>${item.name}</b><br><small>${item.price} د.ع</small></div>
-                        <button onclick="removeFromCart(${i})" style="background:none; border:none; color:#ff4757; font-size:20px;">×</button>
-                    </div>`;
-                total += parseInt(item.price.replace(/,/g, '')) || 0;
-            });
-            totalDiv.innerHTML = cart.length ? `کۆی گشتی: ${total.toLocaleString()} د.ع` : '';
-            document.getElementById('orderBtn').style.display = cart.length ? 'block' : 'none';
-        }
-
-        function removeFromCart(i) {
-            cart.splice(i, 1);
-            localStorage.setItem('zm_cart', JSON.stringify(cart));
-            updateCartUI(); updateCartCount();
-        }
-
-        function sendToWhatsApp() {
-            let msg = `سڵاو ZM STORE، داواکاریم هەیە:\n`;
-            let total = 0;
-            cart.forEach(item => {
-                msg += `- ${item.name} (${item.price} د.ع)\n`;
-                total += parseInt(item.price.replace(/,/g, '')) || 0;
-            });
-            msg += `\nکۆی گشتی: ${total.toLocaleString()} د.ع`;
-            window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
+        // Admin Logic
         function checkLogin() {
             if(document.getElementById('adminPass').value === '75331541') {
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('adminArea').style.display = 'block';
+            } else { alert("پاسۆرد هەڵەیە!"); }
+        }
+
+        function saveProduct() {
+            const name = document.getElementById('pName').value;
+            const price = document.getElementById('pPrice').value;
+            const cat = document.getElementById('pCat').value;
+            const img = document.getElementById('pImg').value;
+            if(name && price && img) {
+                db.ref('products').push().set({name, price, cat, img, pinned: false}, () => {
+                    alert("بڵاوکرایەوە!");
+                    document.getElementById('pName').value = '';
+                    document.getElementById('pPrice').value = '';
+                    document.getElementById('pImg').value = '';
+                });
             }
+        }
+
+        function addAd() {
+            const url = document.getElementById('adImgUrl').value;
+            if(url) db.ref('ads').push().set({img: url}, () => {
+                document.getElementById('adImgUrl').value = '';
+                alert("ڕیکلام زیاد کرا");
+            });
+        }
+
+        // Search & Filter
+        function searchItems() {
+            let term = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.item-card').forEach(card => {
+                let name = card.querySelector('b').innerText.toLowerCase();
+                card.style.display = name.includes(term) ? "block" : "none";
+            });
         }
 
         function filterProducts(cat, btn) {
@@ -215,14 +227,61 @@
             });
         }
 
-        // Ads Logic
+        function startAI() {
+            let ask = prompt("چۆن یارمەتیت بدەم؟\n١. باشترین بۆن\n٢. کاتی گەیاندن");
+            if(ask == "1") alert("AI: بەشی VIP پڕفرۆشترینەکانمانن.");
+            else if(ask == "2") alert("AI: گەیاندن ٢٤ بۆ ٤٨ کاتژمێر دەخایەنێت.");
+        }
+
+        // Real-time Data
+        db.ref('products').on('value', snap => {
+            const data = snap.val();
+            const grid = document.getElementById('productGrid');
+            const adminList = document.getElementById('adminProductList');
+            grid.innerHTML = ''; adminList.innerHTML = '';
+            if(data) {
+                let items = Object.keys(data).map(k => ({id: k, ...data[k]}));
+                items.sort((a, b) => (b.pinned || 0) - (a.pinned || 0));
+                items.reverse();
+
+                items.forEach(p => {
+                    grid.innerHTML += `
+                    <div class="item-card" data-cat="${p.cat}">
+                        <div class="img-container">
+                            <img src="${p.img}">
+                            ${p.pinned ? '<div class="pin-tag">📌 تایبەت</div>' : ''}
+                            <div class="watermark">ZM STORE</div>
+                        </div>
+                        <div class="item-info">
+                            <b>${p.name}</b><br>
+                            <span class="price">${p.price} د.ع</span>
+                            <button class="add-to-cart" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">زیادکردن 🛒</button>
+                        </div>
+                    </div>`;
+                    
+                    adminList.innerHTML += `
+                    <div class="admin-list-item">
+                        <img src="${p.img}">
+                        <span style="font-size:12px;">${p.name}</span>
+                        <div>
+                            <button onclick="db.ref('products/${p.id}').update({pinned: ${!p.pinned}})" style="background:blue; color:white; border:none; padding:5px; border-radius:5px;">📌</button>
+                            <button onclick="db.ref('products/${p.id}').remove()" style="background:red; color:white; border:none; padding:5px; border-radius:5px;">X</button>
+                        </div>
+                    </div>`;
+                });
+            }
+        });
+
+        // Ads Sync
         db.ref('ads').on('value', snap => {
             const ads = snap.val();
             const slider = document.getElementById('adSlider');
-            slider.innerHTML = '';
+            const adminAdList = document.getElementById('adminAdList');
+            slider.innerHTML = ''; adminAdList.innerHTML = '';
             if(ads) {
-                Object.values(ads).forEach((ad, i) => {
-                    slider.innerHTML += `<img src="${ad.img}" class="ad-slide ${i===0?'active':''}">`;
+                Object.keys(ads).forEach((key, i) => {
+                    slider.innerHTML += `<img src="${ads[key].img}" class="ad-slide ${i===0?'active':''}">`;
+                    adminAdList.innerHTML += `<div class="admin-list-item"><span>ڕیکلامی ${i+1}</span><button onclick="db.ref('ads/${key}').remove()" style="background:red; color:white; border:none; padding:5px; border-radius:5px;">X</button></div>`;
                 });
             }
         });
@@ -236,6 +295,49 @@
                 next.classList.add('active');
             }
         }, 4000);
+
+        // Cart Logic
+        function addToCart(name, price, img) {
+            cart.push({name, price, img});
+            localStorage.setItem('zm_cart', JSON.stringify(cart));
+            updateCartCount();
+            showToast("✅ زیاد کرا بۆ سەبەتە");
+        }
+
+        function updateCartCount() { document.getElementById('cartCount').innerText = cart.length; }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            const totalDiv = document.getElementById('cartTotal');
+            list.innerHTML = cart.length ? '' : '<p style="text-align:center; color:#666;">سەبەتەکەت چۆڵە</p>';
+            let total = 0;
+            cart.forEach((item, i) => {
+                list.innerHTML += `<div class="cart-item"><img src="${item.img}" style="width:50px;height:50px;object-fit:cover;border-radius:5px;"><div style="flex:1"><b>${item.name}</b><br><small>${item.price} د.ع</small></div><button onclick="removeFromCart(${i})" style="color:red; border:none; background:none; font-size:20px;">×</button></div>`;
+                total += parseInt(item.price.replace(/,/g, '')) || 0;
+            });
+            document.getElementById('orderNote').style.display = cart.length ? 'block' : 'none';
+            document.getElementById('orderBtn').style.display = cart.length ? 'block' : 'none';
+            totalDiv.innerHTML = cart.length ? `کۆی گشتی: ${total.toLocaleString()} د.ع` : '';
+        }
+
+        function removeFromCart(i) {
+            cart.splice(i, 1);
+            localStorage.setItem('zm_cart', JSON.stringify(cart));
+            updateCartUI(); updateCartCount();
+        }
+
+        function sendToWhatsApp() {
+            let note = document.getElementById('orderNote').value;
+            let msg = `سڵاو ZM STORE، داواکاریم هەیە:\n`;
+            let total = 0;
+            cart.forEach(item => {
+                msg += `- ${item.name} (${item.price})\n`;
+                total += parseInt(item.price.replace(/,/g, '')) || 0;
+            });
+            if(note) msg += `\nتێبینی: ${note}`;
+            msg += `\n\nکۆی گشتی: ${total.toLocaleString()} د.ع`;
+            window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`, '_blank');
+        }
 
         updateCartCount();
     </script>
