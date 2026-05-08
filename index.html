@@ -7,158 +7,158 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #d4af37; --bg: #f3f4f6; --card: #ffffff; --text: #1a1a1a; --red: #ee5253; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 90px; overflow-x: hidden; }
+        :root { --gold: #d4af37; --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --red: #ee5253; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 80px; }
         
         /* Header */
-        .header { text-align: center; padding: 20px; background: #000; color: var(--gold); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .header h1 { margin: 0; font-size: 22px; letter-spacing: 2px; }
+        .header { text-align: center; padding: 15px; background: #000; color: var(--gold); position: sticky; top: 0; z-index: 1000; }
+        .header h1 { margin: 0; font-size: 20px; letter-spacing: 2px; }
 
-        /* Banner Slider */
-        .ads-container { width: 100%; height: 200px; background: #eee; position: relative; overflow: hidden; }
-        .ad-slide { width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; }
-        .ad-slide.active { display: block; animation: fadeIn 0.5s; }
+        /* Search Box */
+        .search-container { padding: 10px; background: #fff; border-bottom: 1px solid #eee; }
+        .search-input { width: 100%; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; box-sizing: border-box; }
 
-        /* Flash Sale Progress */
-        .sale-badge { position: absolute; top: 10px; right: 10px; background: var(--red); color: white; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; z-index: 5; }
-        .progress-box { padding: 5px 10px 10px; }
-        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 5px 0; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff9f43, #ee5253); border-radius: 10px; }
-        .fire-text { font-size: 11px; color: #576574; display: flex; align-items: center; gap: 4px; }
-
-        /* Grid & Cards */
+        /* Grid */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .item-card { background: var(--card); border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #efefef; position: relative; display: flex; flex-direction: column; }
+        .item-card { background: var(--card); border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; border: 1px solid #eee; }
+        
+        /* Image & Zoom */
         .img-box { width: 100%; height: 160px; background: #fff; cursor: zoom-in; }
         .img-box img { width: 100%; height: 100%; object-fit: contain; }
         
-        .info { padding: 12px; text-align: center; flex-grow: 1; }
-        .info b { font-size: 14px; color: #2d3436; display: block; margin-bottom: 5px; height: 36px; overflow: hidden; }
-        .price-tag { color: var(--red); font-weight: 800; font-size: 15px; }
-        .old-price { text-decoration: line-through; color: #b2bec3; font-size: 12px; margin-right: 5px; }
+        /* Flash Sale Progress */
+        .sale-tag { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        .progress-container { padding: 0 10px 10px; }
+        .progress-bar { height: 6px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 4px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff9f43, #ee5253); width: 70%; }
 
-        /* Modal Zoom */
-        #zoomModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; }
-        #zoomModal img { max-width: 90%; max-height: 80%; border-radius: 10px; transition: 0.3s; }
+        /* Zoom Modal */
+        #zoomModal { display: none; position: fixed; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        #zoomImg { max-width: 90%; max-height: 80%; border-radius: 10px; }
 
         /* Buttons */
-        .btn-add { background: #000; color: var(--gold); border: none; width: 100%; padding: 10px; border-radius: 12px; font-weight: bold; margin-top: 8px; cursor: pointer; }
-
-        /* Nav Bottom */
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-btn { color: #8395a7; font-size: 22px; cursor: pointer; border: none; background: none; }
-        .nav-btn.active { color: #000; transform: scale(1.1); }
-
-        /* Admin UI */
-        .page { display: none; }
-        .page.active { display: block; }
-        .admin-panel { padding: 20px; background: #fff; margin: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .admin-panel input, .admin-panel select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        .btn-add { background: #000; color: var(--gold); border: none; width: 90%; padding: 10px; margin: 10px auto; border-radius: 10px; display: block; font-weight: bold; cursor: pointer; }
         
+        /* Pages */
+        .page { display: none; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Cart Page Styles */
+        .cart-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 10px; margin: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+
+        /* Bottom Nav */
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 999; }
+        .nav-btn { color: #aaa; text-align: center; font-size: 12px; cursor: pointer; position: relative; border:none; background:none; flex:1; }
+        .nav-btn.active { color: #000; }
+        .badge { position: absolute; top: -5px; right: 25%; background: red; color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; }
+
+        /* Admin Styles */
+        .admin-box { padding: 20px; background: #fff; margin: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .admin-box input, .admin-box select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div class="header"><h1>ZM STORE</h1></div>
 
-    <div id="zoomModal" onclick="this.style.display='none'">
-        <img id="zoomedImg">
-    </div>
+    <div id="zoomModal" onclick="this.style.display='none'"><img id="zoomImg"></div>
 
     <div id="home" class="page active">
-        <div class="ads-container" id="adSlider"></div>
+        <div class="search-container">
+            <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="بۆ چ بەرهەمێک دەگەڕێیت؟..." class="search-input">
+        </div>
         <div id="productGrid" class="grid"></div>
     </div>
 
+    <div id="cartPage" class="page">
+        <h3 style="text-align:center; padding-top:20px;">🛒 سەبەتەی کڕین</h3>
+        <div id="cartList"></div>
+        <div id="cartTotal" style="text-align:center; margin:20px; font-weight:bold; color:var(--red);"></div>
+        <button class="btn-add" onclick="sendToWhatsApp()" id="orderBtn" style="display:none; width:90%;">ناردنی داواکاری بۆ وەتسئاپ 📱</button>
+    </div>
+
     <div id="admin" class="page">
-        <div id="loginArea" class="admin-panel">
-            <h3>بەشی ئەدمین 👤</h3>
-            <input type="password" id="adminPass" placeholder="پاسۆرد بنووسە...">
+        <div id="loginArea" class="admin-box">
+            <h3>بەشی ئەدمین</h3>
+            <input type="password" id="adminPass" placeholder="پاسۆرد بنووسە">
             <button class="btn-add" onclick="checkLogin()">داخڵبوون</button>
         </div>
-        <div id="adminArea" style="display:none;" class="admin-panel">
-            <h3 style="color:var(--gold)">زیادکردنی بەرهەمی نوێ</h3>
+        <div id="adminArea" style="display:none;" class="admin-box">
+            <h3>زیادکردنی بەرهەم</h3>
             <input type="text" id="pName" placeholder="ناوی بەرهەم">
             <input type="text" id="pPrice" placeholder="نرخی ئێستا">
-            <input type="text" id="pOldPrice" placeholder="نرخی کۆن (بۆ داشکاندن)">
+            <input type="text" id="pOldPrice" placeholder="نرخی پێش داشکاندن">
             <input type="text" id="pImg" placeholder="لینکی وێنە">
             <select id="pIsSale">
                 <option value="false">بەرهەمی ئاسایی</option>
-                <option value="true">داشکاندنی کاتی (Flash Sale) 🔥</option>
+                <option value="true">داشکاندنی کاتی 🔥</option>
             </select>
             <button class="btn-add" onclick="saveProduct()">بڵاوکردنەوە ✅</button>
             <hr>
-            <div id="adminList"></div>
+            <div id="adminProductList"></div>
         </div>
     </div>
 
     <div class="nav-bottom">
-        <button class="nav-btn active" onclick="showPage('home', this)">🏠</button>
-        <button class="nav-btn" onclick="showPage('admin', this)">👤</button>
+        <button class="nav-btn active" onclick="showPage('home', this)">🏠<br>سەرەکی</button>
+        <button class="nav-btn" onclick="showPage('cartPage', this)">🛒<br>سەبەتە <span id="cartCount" class="badge">0</span></button>
+        <button class="nav-btn" onclick="showPage('admin', this)">👤<br>ئەدمین</button>
     </div>
 
     <script>
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
-            authDomain: "zm-parfum.firebaseapp.com",
             databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
             projectId: "zm-parfum",
-            storageBucket: "zm-parfum.appspot.com",
-            messagingSenderId: "262863453215",
-            appId: "1:262863453215:web:e11023e5ed827b0"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        let cart = JSON.parse(localStorage.getItem('zm_cart')) || [];
 
-        // UI Functions
+        // Global UI
         function showPage(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
+            if(id === 'cartPage') updateCartUI();
         }
 
         function openZoom(src) {
-            document.getElementById('zoomedImg').src = src;
+            document.getElementById('zoomImg').src = src;
             document.getElementById('zoomModal').style.display = 'flex';
         }
 
-        // Real-time Data
+        // Product Logic
         db.ref('products').on('value', snap => {
             const grid = document.getElementById('productGrid');
-            const aList = document.getElementById('adminList');
-            grid.innerHTML = ''; aList.innerHTML = '';
+            const adminList = document.getElementById('adminProductList');
+            grid.innerHTML = ''; adminList.innerHTML = '';
             const data = snap.val();
             if(data) {
                 Object.keys(data).reverse().forEach(key => {
                     const p = data[key];
                     const isSale = p.isSale === "true";
                     
-                    // Main Grid
                     grid.innerHTML += `
                     <div class="item-card">
-                        ${isSale ? '<div class="sale-badge">داشکاندن</div>' : ''}
+                        ${isSale ? '<div class="sale-tag">ئۆفەر 🔥</div>' : ''}
                         <div class="img-box" onclick="openZoom('${p.img}')">
                             <img src="${p.img}">
                         </div>
-                        <div class="info">
-                            <b>${p.name}</b>
-                            <span class="price-tag">${p.price} IQD</span>
-                            ${p.oldPrice ? `<span class="old-price">${p.oldPrice}</span>` : ''}
-                            ${isSale ? `
-                                <div class="progress-box">
-                                    <div class="fire-text">🔥 ئۆفەری کاتی</div>
-                                    <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
-                                </div>
-                            ` : ''}
-                            <button class="btn-add">کڕین 🛒</button>
+                        <div style="padding:10px; text-align:center;">
+                            <b style="font-size:14px;">${p.name}</b><br>
+                            <span style="color:var(--red); font-weight:bold;">${p.price} IQD</span>
+                            ${p.oldPrice ? `<small style="text-decoration:line-through; color:#999; margin-left:5px;">${p.oldPrice}</small>` : ''}
+                            ${isSale ? `<div class="progress-container"><div class="progress-bar"><div class="progress-fill"></div></div></div>` : ''}
+                            <button class="btn-add" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">زیادکردن 🛒</button>
                         </div>
                     </div>`;
 
-                    // Admin Management
-                    aList.innerHTML += `
+                    adminList.innerHTML += `
                     <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
                         <span>${p.name}</span>
                         <button onclick="db.ref('products/${key}').remove()" style="color:red; border:none; background:none;">سڕینەوە</button>
@@ -167,12 +167,59 @@
             }
         });
 
+        // Cart Logic
+        function addToCart(name, price, img) {
+            cart.push({name, price, img});
+            localStorage.setItem('zm_cart', JSON.stringify(cart));
+            updateCartCount();
+            alert("✅ زیاد کرا بۆ سەبەتە");
+        }
+
+        function updateCartCount() { document.getElementById('cartCount').innerText = cart.length; }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            list.innerHTML = cart.length ? '' : '<p style="text-align:center;">سەبەتەکە چۆڵە</p>';
+            let total = 0;
+            cart.forEach((item, i) => {
+                list.innerHTML += `
+                <div class="cart-item">
+                    <img src="${item.img}">
+                    <div style="flex:1"><b>${item.name}</b><br><small>${item.price} IQD</small></div>
+                    <button onclick="removeFromCart(${i})" style="color:red; border:none; background:none; font-size:18px;">×</button>
+                </div>`;
+                total += parseInt(item.price.replace(/,/g, '')) || 0;
+            });
+            document.getElementById('cartTotal').innerText = cart.length ? `کۆی گشتی: ${total.toLocaleString()} IQD` : '';
+            document.getElementById('orderBtn').style.display = cart.length ? 'block' : 'none';
+        }
+
+        function removeFromCart(i) {
+            cart.splice(i, 1);
+            localStorage.setItem('zm_cart', JSON.stringify(cart));
+            updateCartUI(); updateCartCount();
+        }
+
+        function sendToWhatsApp() {
+            let msg = `سڵاو ZM STORE، داواکاریم هەیە:\n`;
+            cart.forEach(item => msg += `- ${item.name} (${item.price})\n`);
+            window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Search
+        function searchItems() {
+            let term = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(term) ? 'block' : 'none';
+            });
+        }
+
         // Admin Auth
         function checkLogin() {
             if(document.getElementById('adminPass').value === '75331541') {
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('adminArea').style.display = 'block';
-            } else { alert("پاسۆرد هەڵەیە!"); }
+            }
         }
 
         function saveProduct() {
@@ -181,17 +228,16 @@
             const oldPrice = document.getElementById('pOldPrice').value;
             const img = document.getElementById('pImg').value;
             const isSale = document.getElementById('pIsSale').value;
-
             if(name && price && img) {
                 db.ref('products').push().set({name, price, oldPrice, img, isSale}, () => {
                     alert("بڵاوکرایەوە!");
-                    document.getElementById('pName').value = '';
-                    document.getElementById('pPrice').value = '';
-                    document.getElementById('pOldPrice').value = '';
-                    document.getElementById('pImg').value = '';
+                    document.getElementById('pName').value=''; document.getElementById('pPrice').value='';
+                    document.getElementById('pImg').value='';
                 });
-            } else { alert("تکایە هەموو خانەکان پڕ بکەرەوە!"); }
+            }
         }
+
+        updateCartCount();
     </script>
 </body>
 </html>
