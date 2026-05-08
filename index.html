@@ -7,164 +7,190 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #d4af37; --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; --red: #ff7675; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 90px; }
+        :root { --gold: #d4af37; --bg: #f3f4f6; --card: #ffffff; --text: #1a1a1a; --red: #ee5253; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 90px; overflow-x: hidden; }
         
-        /* Header & Banner */
-        .header { text-align: center; padding: 20px; background: #000; color: var(--gold); }
-        .promo-banner { width: 95%; margin: 10px auto; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        /* Header */
+        .header { text-align: center; padding: 20px; background: #000; color: var(--gold); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; font-size: 22px; letter-spacing: 2px; }
 
-        /* Grid */
+        /* Banner Slider */
+        .ads-container { width: 100%; height: 200px; background: #eee; position: relative; overflow: hidden; }
+        .ad-slide { width: 100%; height: 100%; object-fit: cover; display: none; position: absolute; }
+        .ad-slide.active { display: block; animation: fadeIn 0.5s; }
+
+        /* Flash Sale Progress */
+        .sale-badge { position: absolute; top: 10px; right: 10px; background: var(--red); color: white; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; z-index: 5; }
+        .progress-box { padding: 5px 10px 10px; }
+        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 5px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff9f43, #ee5253); border-radius: 10px; }
+        .fire-text { font-size: 11px; color: #576574; display: flex; align-items: center; gap: 4px; }
+
+        /* Grid & Cards */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .item-card { background: var(--card); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: relative; border: 1px solid #eee; }
+        .item-card { background: var(--card); border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #efefef; position: relative; display: flex; flex-direction: column; }
+        .img-box { width: 100%; height: 160px; background: #fff; cursor: zoom-in; }
+        .img-box img { width: 100%; height: 100%; object-fit: contain; }
         
-        /* Image Style */
-        .img-container { width: 100%; height: 160px; background: #fff; cursor: zoom-in; position: relative; }
-        .img-container img { width: 100%; height: 100%; object-fit: contain; transition: 0.3s; }
-        
-        /* Flash Sale Styles */
-        .sale-tag { position: absolute; top: 10px; left: 10px; background: var(--red); color: white; padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: bold; z-index: 5; }
-        .progress-container { padding: 0 10px 10px; }
-        .progress-bar { height: 6px; background: #dfe6e9; border-radius: 10px; overflow: hidden; margin-top: 5px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff7675, #fab1a0); width: 70%; border-radius: 10px; }
-        .status-text { font-size: 11px; color: #636e72; display: flex; align-items: center; gap: 4px; margin-top: 5px; }
+        .info { padding: 12px; text-align: center; flex-grow: 1; }
+        .info b { font-size: 14px; color: #2d3436; display: block; margin-bottom: 5px; height: 36px; overflow: hidden; }
+        .price-tag { color: var(--red); font-weight: 800; font-size: 15px; }
+        .old-price { text-decoration: line-through; color: #b2bec3; font-size: 12px; margin-right: 5px; }
 
-        /* Zoom Modal */
-        #zoomModal { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        #zoomImg { max-width: 90%; max-height: 80%; border-radius: 15px; transform: scale(0.8); transition: 0.3s; }
-        .close-zoom { position: absolute; top: 40px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
+        /* Modal Zoom */
+        #zoomModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; }
+        #zoomModal img { max-width: 90%; max-height: 80%; border-radius: 10px; transition: 0.3s; }
 
         /* Buttons */
-        .add-btn { background: #000; color: var(--gold); border: none; width: 90%; padding: 10px; margin: 10px auto; border-radius: 12px; display: block; font-weight: bold; cursor: pointer; }
-        
-        /* Bottom Nav */
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-btn { color: #b2bec3; font-size: 20px; cursor: pointer; text-align: center; }
-        .nav-btn.active { color: #000; }
+        .btn-add { background: #000; color: var(--gold); border: none; width: 100%; padding: 10px; border-radius: 12px; font-weight: bold; margin-top: 8px; cursor: pointer; }
 
-        /* Admin Styles */
-        .admin-form input, .admin-form select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; }
+        /* Nav Bottom */
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-btn { color: #8395a7; font-size: 22px; cursor: pointer; border: none; background: none; }
+        .nav-btn.active { color: #000; transform: scale(1.1); }
+
+        /* Admin UI */
+        .page { display: none; }
+        .page.active { display: block; }
+        .admin-panel { padding: 20px; background: #fff; margin: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .admin-panel input, .admin-panel select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div class="header"><h1>ZM STORE</h1></div>
 
-    <div id="zoomModal" onclick="closeZoom()">
-        <span class="close-zoom">&times;</span>
-        <img id="zoomImg">
+    <div id="zoomModal" onclick="this.style.display='none'">
+        <img id="zoomedImg">
     </div>
 
     <div id="home" class="page active">
-        <div class="promo-banner"><img src="https://via.placeholder.com/600x250/000/d4af37?text=FREE+DELIVERY" style="width:100%;"></div>
+        <div class="ads-container" id="adSlider"></div>
         <div id="productGrid" class="grid"></div>
     </div>
 
-    <div id="admin" class="page" style="display:none; padding:20px;">
-        <div id="loginArea">
-            <input type="password" id="adminPass" placeholder="پاسۆرد">
-            <button class="add-btn" onclick="checkLogin()">داخڵبوون</button>
+    <div id="admin" class="page">
+        <div id="loginArea" class="admin-panel">
+            <h3>بەشی ئەدمین 👤</h3>
+            <input type="password" id="adminPass" placeholder="پاسۆرد بنووسە...">
+            <button class="btn-add" onclick="checkLogin()">داخڵبوون</button>
         </div>
-        <div id="adminArea" style="display:none;" class="admin-form">
-            <h3>زیادکردنی بەرهەم</h3>
+        <div id="adminArea" style="display:none;" class="admin-panel">
+            <h3 style="color:var(--gold)">زیادکردنی بەرهەمی نوێ</h3>
             <input type="text" id="pName" placeholder="ناوی بەرهەم">
-            <input type="text" id="pPrice" placeholder="نرخ">
-            <input type="text" id="pOldPrice" placeholder="نرخی پێش داشکاندن (ئارەزوومەندانە)">
+            <input type="text" id="pPrice" placeholder="نرخی ئێستا">
+            <input type="text" id="pOldPrice" placeholder="نرخی کۆن (بۆ داشکاندن)">
             <input type="text" id="pImg" placeholder="لینکی وێنە">
             <select id="pIsSale">
                 <option value="false">بەرهەمی ئاسایی</option>
-                <option value="true">داشکاندنی کاتی 🔥</option>
+                <option value="true">داشکاندنی کاتی (Flash Sale) 🔥</option>
             </select>
-            <button class="add-btn" onclick="saveProduct()">بڵاوکردنەوە ✅</button>
-            <div id="adminProductList"></div>
+            <button class="btn-add" onclick="saveProduct()">بڵاوکردنەوە ✅</button>
+            <hr>
+            <div id="adminList"></div>
         </div>
     </div>
 
     <div class="nav-bottom">
-        <div class="nav-btn active" onclick="showPage('home')">🏠</div>
-        <div class="nav-btn" onclick="showPage('cart')">🛒</div>
-        <div class="nav-btn" onclick="showPage('admin')">👤</div>
+        <button class="nav-btn active" onclick="showPage('home', this)">🏠</button>
+        <button class="nav-btn" onclick="showPage('admin', this)">👤</button>
     </div>
 
     <script>
-        // فایەربەیسەکەی خۆت لێرە دابنێ
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
+            authDomain: "zm-parfum.firebaseapp.com",
             databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
             projectId: "zm-parfum",
+            storageBucket: "zm-parfum.appspot.com",
+            messagingSenderId: "262863453215",
+            appId: "1:262863453215:web:e11023e5ed827b0"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Zoom Functions
-        function openZoom(src) {
-            const modal = document.getElementById('zoomModal');
-            const img = document.getElementById('zoomImg');
-            img.src = src;
-            modal.style.display = 'flex';
-            setTimeout(() => img.style.transform = 'scale(1)', 50);
-        }
-        function closeZoom() {
-            document.getElementById('zoomModal').style.display = 'none';
-            document.getElementById('zoomImg').style.transform = 'scale(0.8)';
+        // UI Functions
+        function showPage(id, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
         }
 
-        // Product Logic
+        function openZoom(src) {
+            document.getElementById('zoomedImg').src = src;
+            document.getElementById('zoomModal').style.display = 'flex';
+        }
+
+        // Real-time Data
         db.ref('products').on('value', snap => {
             const grid = document.getElementById('productGrid');
-            grid.innerHTML = '';
+            const aList = document.getElementById('adminList');
+            grid.innerHTML = ''; aList.innerHTML = '';
             const data = snap.val();
             if(data) {
-                Object.keys(data).forEach(key => {
+                Object.keys(data).reverse().forEach(key => {
                     const p = data[key];
                     const isSale = p.isSale === "true";
+                    
+                    // Main Grid
                     grid.innerHTML += `
                     <div class="item-card">
-                        ${isSale ? '<div class="sale-tag">داشکاندن</div>' : ''}
-                        <div class="img-container" onclick="openZoom('${p.img}')">
+                        ${isSale ? '<div class="sale-badge">داشکاندن</div>' : ''}
+                        <div class="img-box" onclick="openZoom('${p.img}')">
                             <img src="${p.img}">
                         </div>
-                        <div style="padding:10px;">
-                            <b style="font-size:14px;">${p.name}</b><br>
-                            <span style="color:var(--red); font-weight:bold;">${p.price} IQD</span>
-                            ${p.oldPrice ? `<small style="text-decoration:line-through; color:#999; margin-left:5px;">${p.oldPrice}</small>` : ''}
-                            
+                        <div class="info">
+                            <b>${p.name}</b>
+                            <span class="price-tag">${p.price} IQD</span>
+                            ${p.oldPrice ? `<span class="old-price">${p.oldPrice}</span>` : ''}
                             ${isSale ? `
-                                <div class="progress-container">
-                                    <div class="status-text">🔥 ئێستا لە فرۆشتندایە</div>
-                                    <div class="progress-bar"><div class="progress-fill" style="width:${Math.floor(Math.random() * 40 + 60)}%"></div></div>
+                                <div class="progress-box">
+                                    <div class="fire-text">🔥 ئۆفەری کاتی</div>
+                                    <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
                                 </div>
                             ` : ''}
-                            
-                            <button class="add-btn" onclick="addToCart('${p.name}')">زیادکردن</button>
+                            <button class="btn-add">کڕین 🛒</button>
                         </div>
+                    </div>`;
+
+                    // Admin Management
+                    aList.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
+                        <span>${p.name}</span>
+                        <button onclick="db.ref('products/${key}').remove()" style="color:red; border:none; background:none;">سڕینەوە</button>
                     </div>`;
                 });
             }
         });
 
-        // Admin Actions
+        // Admin Auth
         function checkLogin() {
             if(document.getElementById('adminPass').value === '75331541') {
                 document.getElementById('loginArea').style.display = 'none';
                 document.getElementById('adminArea').style.display = 'block';
-            }
+            } else { alert("پاسۆرد هەڵەیە!"); }
         }
 
         function saveProduct() {
-            const p = {
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                oldPrice: document.getElementById('pOldPrice').value,
-                img: document.getElementById('pImg').value,
-                isSale: document.getElementById('pIsSale').value
-            };
-            db.ref('products').push().set(p, () => alert("سەرکەوتوو بوو!"));
-        }
+            const name = document.getElementById('pName').value;
+            const price = document.getElementById('pPrice').value;
+            const oldPrice = document.getElementById('pOldPrice').value;
+            const img = document.getElementById('pImg').value;
+            const isSale = document.getElementById('pIsSale').value;
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
+            if(name && price && img) {
+                db.ref('products').push().set({name, price, oldPrice, img, isSale}, () => {
+                    alert("بڵاوکرایەوە!");
+                    document.getElementById('pName').value = '';
+                    document.getElementById('pPrice').value = '';
+                    document.getElementById('pOldPrice').value = '';
+                    document.getElementById('pImg').value = '';
+                });
+            } else { alert("تکایە هەموو خانەکان پڕ بکەرەوە!"); }
         }
     </script>
 </body>
