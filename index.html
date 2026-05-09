@@ -3,112 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZM STORE | Luxury Shop</title>
+    <title>ZM STORE | Premium Shop</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #d4af37; --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --red: #ee5253; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 80px; }
+        :root { --gold: #d4af37; --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21; --red: #ff4757; --blue: #2e86de; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 100px; }
         
-        /* Header */
-        .header { text-align: center; padding: 15px; background: #000; color: var(--gold); position: sticky; top: 0; z-index: 1000; }
-        .header h1 { margin: 0; font-size: 20px; letter-spacing: 2px; }
+        /* Header & Nav */
+        .header { text-align: center; padding: 20px; background: #000; color: var(--gold); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .header h1 { margin: 0; font-size: 22px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* Search Box */
-        .search-container { padding: 10px; background: #fff; border-bottom: 1px solid #eee; }
-        .search-input { width: 100%; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; box-sizing: border-box; }
+        /* Modern Bottom Nav */
+        .nav-bottom { position: fixed; bottom: 15px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.95); display: flex; justify-content: space-around; padding: 12px 0; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); backdrop-filter: blur(10px); z-index: 1000; border: 1px solid rgba(255,255,255,0.3); }
+        .nav-btn { color: #888; text-align: center; font-size: 11px; cursor: pointer; border: none; background: none; flex: 1; transition: 0.3s; }
+        .nav-btn i { display: block; font-size: 22px; margin-bottom: 4px; }
+        .nav-btn.active { color: var(--gold); transform: translateY(-5px); }
 
-        /* Grid */
+        /* Ads Section */
+        .ads-slider { width: 95%; height: 180px; margin: 15px auto; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.1); background: #ddd; }
+        .ad-slide { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .ad-slide.active { display: block; animation: fadeIn 0.8s; }
+
+        /* Product Grid */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .item-card { background: var(--card); border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; border: 1px solid #eee; }
-        
-        /* Image & Zoom */
-        .img-box { width: 100%; height: 160px; background: #fff; cursor: zoom-in; }
+        .item-card { background: var(--card); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border: 1px solid #fff; transition: 0.3s; }
+        .img-box { width: 100%; height: 150px; background: #fff; cursor: zoom-in; }
         .img-box img { width: 100%; height: 100%; object-fit: contain; }
         
-        /* Flash Sale Progress */
-        .sale-tag { position: absolute; top: 8px; left: 8px; background: var(--red); color: white; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-        .progress-container { padding: 0 10px 10px; }
-        .progress-bar { height: 6px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 4px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff9f43, #ee5253); width: 70%; }
+        .badge-sale { position: absolute; top: 10px; left: 10px; background: var(--red); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: bold; }
+        .badge-guarantee { position: absolute; top: 10px; right: 10px; background: #2ecc71; color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; }
 
-        /* Zoom Modal */
-        #zoomModal { display: none; position: fixed; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        #zoomImg { max-width: 90%; max-height: 80%; border-radius: 10px; }
+        .info { padding: 12px; text-align: center; }
+        .info b { font-size: 14px; display: block; margin-bottom: 5px; height: 38px; overflow: hidden; }
+        .price { color: var(--text); font-weight: 800; font-size: 16px; }
+        .desc-text { font-size: 11px; color: #777; margin: 5px 0; height: 30px; overflow: hidden; }
 
-        /* Buttons */
-        .btn-add { background: #000; color: var(--gold); border: none; width: 90%; padding: 10px; margin: 10px auto; border-radius: 10px; display: block; font-weight: bold; cursor: pointer; }
-        
+        /* Admin Rooms */
+        .admin-container { padding: 15px; }
+        .admin-room { background: #fff; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .admin-room h3 { margin-top: 0; color: var(--gold); border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #eee; background: #f9f9f9; box-sizing: border-box; }
+        .btn-main { background: #000; color: var(--gold); border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
         /* Pages */
-        .page { display: none; animation: fadeIn 0.3s; }
+        .page { display: none; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Cart Page Styles */
-        .cart-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 10px; margin: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
-
-        /* Bottom Nav */
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 999; }
-        .nav-btn { color: #aaa; text-align: center; font-size: 12px; cursor: pointer; position: relative; border:none; background:none; flex:1; }
-        .nav-btn.active { color: #000; }
-        .badge { position: absolute; top: -5px; right: 25%; background: red; color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; }
-
-        /* Admin Styles */
-        .admin-box { padding: 20px; background: #fff; margin: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .admin-box input, .admin-box select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div class="header"><h1>ZM STORE</h1></div>
 
-    <div id="zoomModal" onclick="this.style.display='none'"><img id="zoomImg"></div>
-
     <div id="home" class="page active">
-        <div class="search-container">
-            <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="بۆ چ بەرهەمێک دەگەڕێیت؟..." class="search-input">
-        </div>
+        <div class="ads-slider" id="adSlider"></div>
         <div id="productGrid" class="grid"></div>
     </div>
 
     <div id="cartPage" class="page">
-        <h3 style="text-align:center; padding-top:20px;">🛒 سەبەتەی کڕین</h3>
+        <h2 style="text-align:center; margin-top:30px;">سەبەتەی کڕین 🛒</h2>
         <div id="cartList"></div>
-        <div id="cartTotal" style="text-align:center; margin:20px; font-weight:bold; color:var(--red);"></div>
-        <button class="btn-add" onclick="sendToWhatsApp()" id="orderBtn" style="display:none; width:90%;">ناردنی داواکاری بۆ وەتسئاپ 📱</button>
+        <div id="cartTotal" style="text-align:center; font-size:20px; font-weight:bold; margin:20px;"></div>
+        <button class="btn-main" onclick="sendToWhatsApp()" id="orderBtn" style="display:none; width:90%; margin: 0 auto;">ناردنی داواکاری ✅</button>
     </div>
 
     <div id="admin" class="page">
-        <div id="loginArea" class="admin-box">
-            <h3>بەشی ئەدمین</h3>
-            <input type="password" id="adminPass" placeholder="پاسۆرد بنووسە">
-            <button class="btn-add" onclick="checkLogin()">داخڵبوون</button>
+        <div id="loginArea" style="padding:40px; text-align:center;">
+            <input type="password" id="adminPass" placeholder="پاسۆردی ئەدمین">
+            <button class="btn-main" onclick="checkLogin()">چوونە ژوورەوە</button>
         </div>
-        <div id="adminArea" style="display:none;" class="admin-box">
-            <h3>زیادکردنی بەرهەم</h3>
-            <input type="text" id="pName" placeholder="ناوی بەرهەم">
-            <input type="text" id="pPrice" placeholder="نرخی ئێستا">
-            <input type="text" id="pOldPrice" placeholder="نرخی پێش داشکاندن">
-            <input type="text" id="pImg" placeholder="لینکی وێنە">
-            <select id="pIsSale">
-                <option value="false">بەرهەمی ئاسایی</option>
-                <option value="true">داشکاندنی کاتی 🔥</option>
-            </select>
-            <button class="btn-add" onclick="saveProduct()">بڵاوکردنەوە ✅</button>
-            <hr>
-            <div id="adminProductList"></div>
+
+        <div id="adminArea" style="display:none;" class="admin-container">
+            <div class="admin-room">
+                <h3>📦 ژووری زیادکردنی بەرهەم</h3>
+                <input type="text" id="pName" placeholder="ناوی بەرهەم">
+                <input type="number" id="pPrice" placeholder="نرخ (تەنها ژمارە بنووسە)">
+                <textarea id="pDesc" placeholder="وەسفی بەرهەم (چییە و بۆچی باشە؟)"></textarea>
+                <input type="text" id="pImg" placeholder="لینکی وێنە">
+                <select id="pType">
+                    <option value="normal">بەرهەمی ئاسایی</option>
+                    <option value="sale">داشکاندنی کاتی 🔥</option>
+                    <option value="guarantee">بە گرێنتی ✅</option>
+                </select>
+                <button class="btn-main" onclick="saveProduct()">بڵاوکردنەوەی بەرهەم</button>
+            </div>
+
+            <div class="admin-room">
+                <h3>🖼️ ژووری ڕیکلامەکان</h3>
+                <input type="text" id="adImg" placeholder="لینکی وێنەی ڕیکلام">
+                <button class="btn-main" onclick="addAd()">زیادکردنی ڕیکلام</button>
+                <div id="adminAdList"></div>
+            </div>
+
+            <div class="admin-room">
+                <h3>📌 بەڕێوەبردنی پۆستەکان (پین و سڕینەوە)</h3>
+                <div id="adminProductList"></div>
+            </div>
         </div>
     </div>
 
     <div class="nav-bottom">
-        <button class="nav-btn active" onclick="showPage('home', this)">🏠<br>سەرەکی</button>
-        <button class="nav-btn" onclick="showPage('cartPage', this)">🛒<br>سەبەتە <span id="cartCount" class="badge">0</span></button>
-        <button class="nav-btn" onclick="showPage('admin', this)">👤<br>ئەدمین</button>
+        <div class="nav-btn active" onclick="showPage('home', this)">🏠<br>سەرەکی</div>
+        <div class="nav-btn" onclick="showPage('cartPage', this)">🛒<br>سەبەتە <span id="cartCount">0</span></div>
+        <div class="nav-btn" onclick="showPage('admin', this)">👤<br>ئەدمین</div>
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase Configuration (هەمان هی خۆت)
         const firebaseConfig = {
             apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
             databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
@@ -116,9 +118,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let cart = JSON.parse(localStorage.getItem('zm_cart')) || [];
 
-        // Global UI
+        // فۆرماتکردنی نرخ بۆ فاریزە
+        function formatPrice(num) {
+            return Number(num).toLocaleString();
+        }
+
         function showPage(id, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -127,12 +132,7 @@
             if(id === 'cartPage') updateCartUI();
         }
 
-        function openZoom(src) {
-            document.getElementById('zoomImg').src = src;
-            document.getElementById('zoomModal').style.display = 'flex';
-        }
-
-        // Product Logic
+        // Real-time Data
         db.ref('products').on('value', snap => {
             const grid = document.getElementById('productGrid');
             const adminList = document.getElementById('adminProductList');
@@ -141,80 +141,70 @@
             if(data) {
                 Object.keys(data).reverse().forEach(key => {
                     const p = data[key];
-                    const isSale = p.isSale === "true";
-                    
                     grid.innerHTML += `
                     <div class="item-card">
-                        ${isSale ? '<div class="sale-tag">ئۆفەر 🔥</div>' : ''}
-                        <div class="img-box" onclick="openZoom('${p.img}')">
-                            <img src="${p.img}">
-                        </div>
-                        <div style="padding:10px; text-align:center;">
-                            <b style="font-size:14px;">${p.name}</b><br>
-                            <span style="color:var(--red); font-weight:bold;">${p.price} IQD</span>
-                            ${p.oldPrice ? `<small style="text-decoration:line-through; color:#999; margin-left:5px;">${p.oldPrice}</small>` : ''}
-                            ${isSale ? `<div class="progress-container"><div class="progress-bar"><div class="progress-fill"></div></div></div>` : ''}
-                            <button class="btn-add" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">زیادکردن 🛒</button>
+                        ${p.type === 'sale' ? '<div class="badge-sale">SALE 🔥</div>' : ''}
+                        ${p.type === 'guarantee' ? '<div class="badge-guarantee">گرێنتی ✅</div>' : ''}
+                        <div class="img-box"><img src="${p.img}"></div>
+                        <div class="info">
+                            <b>${p.name}</b>
+                            <div class="desc-text">${p.desc || ''}</div>
+                            <div class="price">${formatPrice(p.price)} د.ع</div>
+                            <button class="btn-main" style="padding:8px; font-size:12px;" onclick="addToCart('${p.name}', '${p.price}', '${p.img}')">زیادکردن بۆ سەبەتە</button>
                         </div>
                     </div>`;
 
                     adminList.innerHTML += `
                     <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
-                        <span>${p.name}</span>
+                        <span style="font-size:12px;">${p.name}</span>
                         <button onclick="db.ref('products/${key}').remove()" style="color:red; border:none; background:none;">سڕینەوە</button>
                     </div>`;
                 });
             }
         });
 
-        // Cart Logic
-        function addToCart(name, price, img) {
-            cart.push({name, price, img});
-            localStorage.setItem('zm_cart', JSON.stringify(cart));
-            updateCartCount();
-            alert("✅ زیاد کرا بۆ سەبەتە");
+        // Ads Logic
+        db.ref('ads').on('value', snap => {
+            const slider = document.getElementById('adSlider');
+            const adminAdList = document.getElementById('adminAdList');
+            slider.innerHTML = ''; adminAdList.innerHTML = '';
+            const ads = snap.val();
+            if(ads) {
+                Object.keys(ads).forEach((key, i) => {
+                    slider.innerHTML += `<img src="${ads[key].img}" class="ad-slide ${i===0?'active':''}">`;
+                    adminAdList.innerHTML += `<div style="padding:5px;">ڕیکلامی ${i+1} <button onclick="db.ref('ads/${key}').remove()">سڕینەوە</button></div>`;
+                });
+            }
+        });
+
+        setInterval(() => {
+            const slides = document.querySelectorAll('.ad-slide');
+            if(slides.length > 0) {
+                let active = document.querySelector('.ad-slide.active');
+                active.classList.remove('active');
+                (active.nextElementSibling || slides[0]).classList.add('active');
+            }
+        }, 4000);
+
+        // Functions
+        function saveProduct() {
+            const p = {
+                name: document.getElementById('pName').value,
+                price: document.getElementById('pPrice').value,
+                desc: document.getElementById('pDesc').value,
+                img: document.getElementById('pImg').value,
+                type: document.getElementById('pType').value
+            };
+            if(p.name && p.price && p.img) {
+                db.ref('products').push().set(p, () => alert("بەرهەمەکە زیادکرا!"));
+            }
         }
 
-        function updateCartCount() { document.getElementById('cartCount').innerText = cart.length; }
-
-        function updateCartUI() {
-            const list = document.getElementById('cartList');
-            list.innerHTML = cart.length ? '' : '<p style="text-align:center;">سەبەتەکە چۆڵە</p>';
-            let total = 0;
-            cart.forEach((item, i) => {
-                list.innerHTML += `
-                <div class="cart-item">
-                    <img src="${item.img}">
-                    <div style="flex:1"><b>${item.name}</b><br><small>${item.price} IQD</small></div>
-                    <button onclick="removeFromCart(${i})" style="color:red; border:none; background:none; font-size:18px;">×</button>
-                </div>`;
-                total += parseInt(item.price.replace(/,/g, '')) || 0;
-            });
-            document.getElementById('cartTotal').innerText = cart.length ? `کۆی گشتی: ${total.toLocaleString()} IQD` : '';
-            document.getElementById('orderBtn').style.display = cart.length ? 'block' : 'none';
+        function addAd() {
+            const img = document.getElementById('adImg').value;
+            if(img) db.ref('ads').push().set({img}, () => alert("ڕیکلام زیادکرا!"));
         }
 
-        function removeFromCart(i) {
-            cart.splice(i, 1);
-            localStorage.setItem('zm_cart', JSON.stringify(cart));
-            updateCartUI(); updateCartCount();
-        }
-
-        function sendToWhatsApp() {
-            let msg = `سڵاو ZM STORE، داواکاریم هەیە:\n`;
-            cart.forEach(item => msg += `- ${item.name} (${item.price})\n`);
-            window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        // Search
-        function searchItems() {
-            let term = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.item-card').forEach(card => {
-                card.style.display = card.innerText.toLowerCase().includes(term) ? 'block' : 'none';
-            });
-        }
-
-        // Admin Auth
         function checkLogin() {
             if(document.getElementById('adminPass').value === '75331541') {
                 document.getElementById('loginArea').style.display = 'none';
@@ -222,22 +212,31 @@
             }
         }
 
-        function saveProduct() {
-            const name = document.getElementById('pName').value;
-            const price = document.getElementById('pPrice').value;
-            const oldPrice = document.getElementById('pOldPrice').value;
-            const img = document.getElementById('pImg').value;
-            const isSale = document.getElementById('pIsSale').value;
-            if(name && price && img) {
-                db.ref('products').push().set({name, price, oldPrice, img, isSale}, () => {
-                    alert("بڵاوکرایەوە!");
-                    document.getElementById('pName').value=''; document.getElementById('pPrice').value='';
-                    document.getElementById('pImg').value='';
-                });
-            }
+        // Cart Logic
+        let cart = [];
+        function addToCart(n, p, i) {
+            cart.push({name:n, price:p, img:i});
+            document.getElementById('cartCount').innerText = cart.length;
+            alert("زیادکرا بۆ سەبەتە");
         }
 
-        updateCartCount();
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            list.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                list.innerHTML += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:10px;"><img src="${item.img}" width="40">${item.name} - ${formatPrice(item.price)} د.ع</div>`;
+                total += parseInt(item.price);
+            });
+            document.getElementById('cartTotal').innerText = "کۆی گشتی: " + formatPrice(total) + " د.ع";
+            document.getElementById('orderBtn').style.display = cart.length > 0 ? 'block' : 'none';
+        }
+
+        function sendToWhatsApp() {
+            let msg = "سڵاو، داواکاریم هەیە:\n";
+            cart.forEach(i => msg += `- ${i.name} (${formatPrice(i.price)} د.ع)\n`);
+            window.open(`https://wa.me/9647507131541?text=${encodeURIComponent(msg)}`);
+        }
     </script>
 </body>
 </html>
