@@ -3,86 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZM STORE | Premium Shop</title>
+    <title>ZM STORE | Ultimate Shop</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #d4af37; --bg: #f8f9fa; --card: #ffffff; --text: #1a1a1a; --red: #ff4757; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; }
+        :root { --gold: #d4af37; --bg: #f8f9fa; --card: #ffffff; --text: #1a1a1a; --red: #ff4757; --green: #2ecc71; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
         
-        /* Header */
-        .header { text-align: center; padding: 20px; background: #000; color: var(--gold); }
-        .header h1 { margin: 0; font-size: 20px; letter-spacing: 2px; }
+        /* Header & Search */
+        .header { background: #000; color: var(--gold); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        .search-box { padding: 10px; background: #000; }
+        .search-box input { width: 90%; padding: 10px; border-radius: 20px; border: none; outline: none; }
+
+        /* Categories Scroll */
+        .categories { display: flex; overflow-x: auto; padding: 15px; gap: 15px; background: #fff; border-bottom: 1px solid #eee; scrollbar-width: none; }
+        .cat-item { min-width: 70px; text-align: center; font-size: 11px; cursor: pointer; }
+        .cat-img { width: 60px; height: 60px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; border: 2px solid transparent; }
+        .cat-item.active .cat-img { border-color: var(--gold); background: #fff; }
 
         /* Product Grid */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
         .item-card { background: var(--card); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border: 1px solid #eee; }
-        .img-box { width: 100%; height: 160px; background: #fff; position: relative; }
+        .img-box { width: 100%; height: 150px; background: #fff; position: relative; cursor: pointer; }
         .img-box img { width: 100%; height: 100%; object-fit: contain; }
         
-        .pin-icon { position: absolute; top: 10px; right: 10px; background: var(--gold); color: black; padding: 4px; border-radius: 50%; font-size: 12px; z-index: 10; }
-        .badge-sale { position: absolute; top: 10px; left: 10px; background: var(--red); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: bold; }
+        /* Badges */
+        .post-logo { position: absolute; bottom: 5px; left: 5px; background: rgba(212, 175, 55, 0.8); color: #000; font-size: 8px; padding: 2px 5px; border-radius: 4px; }
+        .badge-sale { position: absolute; top: 10px; right: 10px; background: var(--red); color: #fff; padding: 3px 8px; border-radius: 8px; font-size: 10px; }
 
-        .info { padding: 12px; text-align: center; }
-        .price { color: #000; font-weight: 800; font-size: 16px; margin: 5px 0; }
+        /* Details Overlay */
+        .details-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; overflow-y: auto; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; }
 
-        /* Admin Dashboard (Grid Style) */
-        .admin-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .admin-box { background: #fff; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #eee; }
-        .admin-box i { font-size: 30px; display: block; margin-bottom: 10px; }
-        
-        /* Forms */
-        .form-container { display: none; padding: 20px; background: #fff; margin: 15px; border-radius: 20px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #eee; background: #f9f9f9; box-sizing: border-box; }
-        .btn-main { background: #000; color: var(--gold); border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; }
+        /* Admin Layout */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .admin-btn { background: #fff; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; cursor: pointer; }
 
-        /* Bottom Nav */
+        /* Nav Bottom */
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-btn { color: #888; font-size: 12px; cursor: pointer; border: none; background: none; }
+        .nav-btn { color: #888; font-size: 11px; text-align: center; cursor: pointer; border: none; background: none; }
         .nav-btn.active { color: #000; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="header"><h1>ZM STORE</h1></div>
+    <div class="search-box"><input type="text" placeholder="بگەڕێ بۆ بەرهەمەکان..." onkeyup="search(this.value)"></div>
+
+    <div class="categories" id="catList">
+        <div class="cat-item active" onclick="filterCat('all')"><div class="cat-img">✨</div>هەمووی</div>
+        <div class="cat-item" onclick="filterCat('بۆن')"><div class="cat-img">🌸</div>بۆن</div>
+        <div class="cat-item" onclick="filterCat('پێست')"><div class="cat-img">🧴</div>پێست</div>
+        <div class="cat-item" onclick="filterCat('شامپۆ')"><div class="cat-img">🧼</div>شامپۆ</div>
+    </div>
 
     <div id="home" class="page active">
         <div id="productGrid" class="grid"></div>
     </div>
 
-    <div id="admin" class="page">
-        <div id="loginArea" style="padding:40px; text-align:center;">
-            <input type="password" id="adminPass" placeholder="پاسۆردی ئەدمین">
-            <button class="btn-main" onclick="checkLogin()">داخڵبوون</button>
+    <div id="detailsOverlay" class="details-overlay"></div>
+
+    <div id="admin" class="page" style="display:none;">
+        <div id="loginArea" style="padding:50px; text-align:center;">
+            <input type="password" id="adminPass" placeholder="پاسۆرد">
+            <button onclick="checkLogin()" class="btn-main" style="width:100%; margin-top:10px; padding:10px; background:#000; color:var(--gold); border-radius:10px;">چوونە ژوورەوە</button>
         </div>
-
         <div id="adminArea" style="display:none;">
-            <h2 style="text-align:center;">بەڕێوەبردن 👤</h2>
-            
-            <div class="admin-menu">
-                <div class="admin-box" onclick="openRoom('roomAdd')">📦<br>پۆستی نوێ</div>
-                <div class="admin-box" onclick="openRoom('roomAds')">🖼️<br>ڕیکلام</div>
-                <div class="admin-box" onclick="openRoom('roomEdit')">📌<br>پین و ئیدیت</div>
-                <div class="admin-box" onclick="location.reload()">🔄<br>ڕیفرێش</div>
+            <div class="admin-grid">
+                <div class="admin-btn" onclick="showRoom('addRoom')">➕ پۆست</div>
+                <div class="admin-btn" onclick="showRoom('chatRoom')">💬 چاتەکان</div>
+                <div class="admin-btn" onclick="showRoom('editRoom')">⚙️ پین</div>
+                <div class="admin-btn" onclick="location.reload()">🔄 نوێکردنەوە</div>
             </div>
-
-            <div id="roomAdd" class="form-container">
-                <h3>زیادکردنی بەرهەم</h3>
+            
+            <div id="addRoom" style="padding:15px; display:none;">
                 <input type="text" id="pName" placeholder="ناوی بەرهەم">
                 <input type="number" id="pPrice" placeholder="نرخ">
                 <textarea id="pDesc" placeholder="وەسفی بەرهەم"></textarea>
                 <input type="text" id="pImg" placeholder="لینکی وێنە">
-                <select id="pType">
-                    <option value="normal">ئاسایی</option>
-                    <option value="sale">داشکاندن 🔥</option>
-                    <option value="guarantee">بە گرێنتی ✅</option>
+                <select id="pCat">
+                    <option value="بۆن">بۆن</option>
+                    <option value="پێست">پێست</option>
+                    <option value="شامپۆ">شامپۆ</option>
                 </select>
-                <button class="btn-main" onclick="saveProduct()">بڵاوکردنەوە</button>
-            </div>
-
-            <div id="roomEdit" class="form-container">
-                <h3>📌 پین و سڕینەوە</h3>
-                <div id="adminProductList"></div>
+                <button onclick="saveProduct()" style="width:100%; padding:15px; background:#000; color:var(--gold); border-radius:10px;">بڵاوکردنەوە</button>
             </div>
         </div>
     </div>
@@ -101,56 +106,57 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function showPage(id, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function openRoom(id) {
-            document.querySelectorAll('.form-container').forEach(r => r.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-        }
-
-        // Real-time Display
+        // Load Products
         db.ref('products').on('value', snap => {
-            const grid = document.getElementById('productGrid');
-            const adminList = document.getElementById('adminProductList');
-            grid.innerHTML = ''; adminList.innerHTML = '';
-            let products = [];
-
-            snap.forEach(child => {
-                products.push({key: child.key, ...child.val()});
-            });
-
-            // ڕیزکردن بەپێی پین (ئەوانەی پینن دێنە سەرەوە)
-            products.sort((a, b) => (b.pinned || 0) - (a.pinned || 0));
-
-            products.forEach(p => {
-                grid.innerHTML += `
-                <div class="item-card">
-                    ${p.pinned ? '<div class="pin-icon">📌</div>' : ''}
-                    ${p.type === 'sale' ? '<div class="badge-sale">SALE 🔥</div>' : ''}
-                    <div class="img-box"><img src="${p.img}"></div>
-                    <div class="info">
-                        <b>${p.name}</b>
-                        <div class="price">${Number(p.price).toLocaleString()} د.ع</div>
-                        <button class="btn-main" style="padding:8px; font-size:12px;">کڕین 🛒</button>
-                    </div>
-                </div>`;
-
-                adminList.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
-                    <span>${p.name}</span>
-                    <div>
-                        <button onclick="togglePin('${p.key}', ${p.pinned || false})" style="color:${p.pinned ? 'gold' : 'gray'}; background:none; border:none; cursor:pointer;">📌</button>
-                        <button onclick="db.ref('products/${p.key}').remove()" style="color:red; background:none; border:none; margin-right:10px;">🗑️</button>
-                    </div>
-                </div>`;
-            });
+            window.allProducts = [];
+            snap.forEach(c => { allProducts.push({id: c.key, ...c.val()}) });
+            render(allProducts);
         });
 
-        function togglePin(key, currentStatus) {
-            db.ref('products/' + key).update({ pinned: !currentStatus });
+        function render(data) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            data.forEach(p => {
+                grid.innerHTML += `
+                <div class="item-card">
+                    <div class="img-box" onclick="showDetails('${p.id}')">
+                        <img src="${p.img}">
+                        <div class="post-logo">ZM STORE</div>
+                    </div>
+                    <div style="padding:10px; text-align:center;">
+                        <b style="font-size:13px;">${p.name}</b>
+                        <div style="color:var(--red); font-weight:bold; margin-top:5px;">${Number(p.price).toLocaleString()} د.ع</div>
+                        <button onclick="addToCart('${p.id}')" style="width:100%; background:#000; color:var(--gold); border:none; padding:8px; border-radius:10px; margin-top:8px;">زیادکردن 🛒</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function showDetails(id) {
+            const p = allProducts.find(x => x.id === id);
+            const overlay = document.getElementById('detailsOverlay');
+            overlay.innerHTML = `
+                <span class="close-btn" onclick="this.parentElement.style.display='none'">×</span>
+                <img src="${p.img}" style="width:100%; height:350px; object-fit:contain; margin-top:50px;">
+                <div style="padding:20px;">
+                    <h2>${p.name}</h2>
+                    <h3 style="color:var(--red)">${Number(p.price).toLocaleString()} د.ع</h3>
+                    <p style="color:#666; line-height:1.6;">${p.desc || 'هیچ وەسفێک نییە'}</p>
+                    <button style="width:100%; padding:15px; background:#000; color:var(--gold); border-radius:15px; font-weight:bold; font-size:18px;">زیادکردن بۆ سەبەتە 🛒</button>
+                </div>
+            `;
+            overlay.style.display = 'block';
+        }
+
+        function filterCat(cat) {
+            if(cat === 'all') render(allProducts);
+            else render(allProducts.filter(x => x.cat === cat));
+            document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function search(val) {
+            render(allProducts.filter(x => x.name.toLowerCase().includes(val.toLowerCase())));
         }
 
         function checkLogin() {
@@ -160,16 +166,27 @@
             }
         }
 
+        function showRoom(id) {
+            document.getElementById('addRoom').style.display = 'none';
+            document.getElementById(id).style.display = 'block';
+        }
+
         function saveProduct() {
-            const p = {
+            const data = {
                 name: document.getElementById('pName').value,
                 price: document.getElementById('pPrice').value,
                 desc: document.getElementById('pDesc').value,
                 img: document.getElementById('pImg').value,
-                type: document.getElementById('pType').value,
-                pinned: false
+                cat: document.getElementById('pCat').value
             };
-            if(p.name && p.price) db.ref('products').push().set(p, () => alert("بڵاوکرایەوە!"));
+            db.ref('products').push().set(data, () => alert("بڵاوکرایەوە!"));
+        }
+
+        function showPage(id, btn) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
     </script>
 </body>
