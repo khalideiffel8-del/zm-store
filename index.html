@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,13 +11,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
 <style>
+
 :root{
     --gold:#d4af37;
     --bg:#f0f2f5;
     --card:#ffffff;
     --text:#1c1e21;
     --red:#ff4757;
-    --blue:#2e86de;
 }
 
 *{
@@ -43,8 +44,8 @@ body{
 }
 
 .header h1{
-    letter-spacing:2px;
     font-size:24px;
+    letter-spacing:2px;
 }
 
 .top-contact{
@@ -59,6 +60,23 @@ body{
     color:var(--gold);
     text-decoration:none;
     font-weight:bold;
+}
+
+/* SEARCH */
+
+.search-box{
+    width:92%;
+    margin:15px auto;
+}
+
+.search-box input{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:18px;
+    background:white;
+    box-shadow:0 5px 20px rgba(0,0,0,0.06);
+    font-size:15px;
 }
 
 /* NAVIGATION */
@@ -87,12 +105,6 @@ body{
     flex:1;
     font-size:11px;
     transition:0.3s;
-}
-
-.nav-btn i{
-    display:block;
-    font-size:22px;
-    margin-bottom:5px;
 }
 
 .nav-btn.active{
@@ -125,7 +137,7 @@ body{
     animation:fadeIn 0.8s;
 }
 
-/* PRODUCTS */
+/* PRODUCT */
 
 .grid{
     display:grid;
@@ -135,28 +147,33 @@ body{
 }
 
 .item-card{
-    background:var(--card);
-    border-radius:22px;
+    background:white;
+    border-radius:28px;
     overflow:hidden;
     position:relative;
-    box-shadow:0 5px 20px rgba(0,0,0,0.06);
-    transition:0.3s;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    transition:0.35s;
 }
 
 .item-card:hover{
-    transform:translateY(-3px);
+    transform:translateY(-5px) scale(1.02);
 }
 
 .img-box{
-    width:100%;
-    height:160px;
-    background:white;
+    background:linear-gradient(145deg,#fff,#f5f5f5);
+    height:170px;
+    padding:10px;
 }
 
 .img-box img{
     width:100%;
     height:100%;
     object-fit:contain;
+    transition:0.4s;
+}
+
+.item-card:hover img{
+    transform:scale(1.08);
 }
 
 .badge-sale{
@@ -190,14 +207,15 @@ body{
 .info b{
     display:block;
     font-size:14px;
-    margin-bottom:6px;
+    margin-bottom:5px;
     height:38px;
     overflow:hidden;
 }
 
 .desc-text{
-    color:#777;
     font-size:11px;
+    color:#777;
+    margin:5px 0;
     height:30px;
     overflow:hidden;
 }
@@ -210,20 +228,34 @@ body{
 
 /* BUTTON */
 
+.add-cart-btn{
+    width:100%;
+    border:none;
+    padding:13px;
+    border-radius:16px;
+    background:linear-gradient(45deg,#d4af37,#f7d774);
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+    font-size:13px;
+    transition:0.3s;
+    box-shadow:0 8px 20px rgba(212,175,55,0.3);
+}
+
+.add-cart-btn:hover{
+    transform:scale(1.03);
+}
+
 .btn-main{
     width:100%;
     border:none;
     background:#000;
     color:var(--gold);
-    padding:13px;
+    padding:14px;
     border-radius:15px;
     font-weight:bold;
     cursor:pointer;
-    transition:0.3s;
-}
-
-.btn-main:hover{
-    transform:scale(1.02);
 }
 
 /* PAGES */
@@ -243,7 +275,7 @@ body{
 }
 
 .admin-room{
-    background:linear-gradient(145deg,#ffffff,#f3f3f3);
+    background:white;
     border-radius:25px;
     padding:20px;
     margin-bottom:25px;
@@ -252,8 +284,6 @@ body{
 
 .admin-room h3{
     margin-bottom:15px;
-    font-size:18px;
-    color:#111;
 }
 
 input,textarea,select{
@@ -285,13 +315,68 @@ input,textarea,select{
     object-fit:cover;
 }
 
-.cart-item-name{
-    font-weight:bold;
-}
-
 .cart-price{
     color:#2ecc71;
     margin-top:5px;
+}
+
+/* PROMO */
+
+.promo-box,
+.note-box,
+.wheel-box{
+    width:92%;
+    margin:15px auto;
+    background:white;
+    padding:15px;
+    border-radius:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* WHEEL */
+
+#wheel{
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    margin:auto;
+    border:10px solid #d4af37;
+    transition:4s ease-out;
+    background:
+    conic-gradient(
+        #ff4757 0deg 60deg,
+        #2ecc71 60deg 120deg,
+        #3498db 120deg 180deg,
+        #f1c40f 180deg 240deg,
+        #9b59b6 240deg 300deg,
+        #e67e22 300deg 360deg
+    );
+}
+
+.arrow{
+    width:0;
+    height:0;
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+    border-bottom:30px solid red;
+    margin:auto;
+}
+
+.spin-btn{
+    margin-top:20px;
+    background:black;
+    color:gold;
+    border:none;
+    padding:14px 25px;
+    border-radius:15px;
+    cursor:pointer;
+}
+
+.spin-result{
+    margin-top:15px;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
 }
 
 #cartTotal{
@@ -307,14 +392,15 @@ input,textarea,select{
     display:block;
     background:linear-gradient(45deg,#25d366,#128c7e);
     color:white;
-    font-size:16px;
-    box-shadow:0 8px 20px rgba(37,211,102,0.3);
 }
+
+/* ANIMATION */
 
 @keyframes fadeIn{
     from{opacity:0;}
     to{opacity:1;}
 }
+
 </style>
 </head>
 
@@ -325,19 +411,25 @@ input,textarea,select{
 </div>
 
 <div class="top-contact">
-    📞 WhatsApp :
-    <a href="https://wa.me/9647507131541">
-        07507131541
-    </a>
+📞 WhatsApp :
+<a href="https://wa.me/9647507131541">
+07507131541
+</a>
 </div>
 
 <!-- HOME -->
 
 <div id="home" class="page active">
 
-    <div class="ads-slider" id="adSlider"></div>
+<div class="search-box">
+<input type="text" id="searchInput"
+placeholder="گەران بۆ بەرهەم..."
+onkeyup="searchProducts()">
+</div>
 
-    <div id="productGrid" class="grid"></div>
+<div class="ads-slider" id="adSlider"></div>
+
+<div id="productGrid" class="grid"></div>
 
 </div>
 
@@ -345,17 +437,64 @@ input,textarea,select{
 
 <div id="cartPage" class="page">
 
-    <h2 style="text-align:center;margin-top:30px;">
-        سەبەتەی کڕین 🛒
-    </h2>
+<h2 style="text-align:center;margin-top:30px;">
+سەبەتەی کڕین 🛒
+</h2>
 
-    <div id="cartList"></div>
+<div id="cartList"></div>
 
-    <div id="cartTotal"></div>
+<!-- PROMO -->
 
-    <button class="btn-main" id="orderBtn" onclick="sendToWhatsApp()" style="display:none;">
-        ناردنی داواکاری ✅
-    </button>
+<div class="promo-box">
+
+<h3>🎁 پرۆمۆ کۆد</h3>
+
+<input type="text" id="promoCode"
+placeholder="پرۆمۆ کۆد">
+
+<button class="btn-main" onclick="applyPromo()">
+چالاککردنی کۆد
+</button>
+
+</div>
+
+<!-- NOTE -->
+
+<div class="note-box">
+
+<h3 style="text-align:center;">
+📝 تێبینی
+</h3>
+
+<textarea id="customerNote"
+placeholder="تێبینی بۆ داواکاری..."></textarea>
+
+</div>
+
+<!-- WHEEL -->
+
+<div class="wheel-box">
+
+<div class="arrow"></div>
+
+<div id="wheel"></div>
+
+<button class="spin-btn" onclick="spinWheel()">
+🎯 جەرخی خەڵات
+</button>
+
+<div class="spin-result" id="spinResult">
+هیچ دیارییەک نەهات
+</div>
+
+</div>
+
+<div id="cartTotal"></div>
+
+<button class="btn-main" id="orderBtn"
+onclick="sendToWhatsApp()" style="display:none;">
+ناردنی داواکاری ✅
+</button>
 
 </div>
 
@@ -363,109 +502,111 @@ input,textarea,select{
 
 <div id="admin" class="page">
 
-    <div id="loginArea" style="padding:40px;text-align:center;">
+<div id="loginArea" style="padding:40px;text-align:center;">
 
-        <input type="password" id="adminPass" placeholder="پاسۆردی ئەدمین">
+<input type="password" id="adminPass"
+placeholder="پاسۆردی ئەدمین">
 
-        <button class="btn-main" onclick="checkLogin()">
-            چوونە ژوورەوە
-        </button>
-
-    </div>
-
-    <div id="adminArea" style="display:none;" class="admin-container">
-
-        <!-- Visitors -->
-
-        <div class="admin-room">
-
-            <h3>👀 ئاماری سەردانکەر</h3>
-
-            <div id="visitorCount"
-            style="
-            text-align:center;
-            font-size:35px;
-            color:#2e86de;
-            font-weight:bold;
-            ">
-            0
-            </div>
-
-        </div>
-
-        <!-- Add Product -->
-
-        <div class="admin-room">
-
-            <h3>📦 زیادکردنی بەرهەم</h3>
-
-            <input type="text" id="pName" placeholder="ناوی بەرهەم">
-
-            <input type="number" id="pPrice" placeholder="نرخ">
-
-            <textarea id="pDesc" placeholder="وەسفی بەرهەم"></textarea>
-
-            <input type="text" id="pImg" placeholder="لینکی وێنە">
-
-            <select id="pType">
-                <option value="normal">ئاسایی</option>
-                <option value="sale">داشکاندن 🔥</option>
-                <option value="guarantee">گرێنتی ✅</option>
-            </select>
-
-            <button class="btn-main" onclick="saveProduct()">
-                بڵاوکردنەوە
-            </button>
-
-        </div>
-
-        <!-- ADS -->
-
-        <div class="admin-room">
-
-            <h3>🖼️ بەڕێوەبردنی ڕیکلام</h3>
-
-            <input type="text" id="adImg" placeholder="لینکی وێنە">
-
-            <button class="btn-main" onclick="addAd()">
-                زیادکردنی ڕیکلام
-            </button>
-
-            <div id="adminAdList"></div>
-
-        </div>
-
-        <!-- Products -->
-
-        <div class="admin-room">
-
-            <h3>📌 بەڕێوەبردنی بەرهەمەکان</h3>
-
-            <div id="adminProductList"></div>
-
-        </div>
-
-    </div>
+<button class="btn-main" onclick="checkLogin()">
+چوونە ژوورەوە
+</button>
 
 </div>
 
-<!-- NAVIGATION -->
+<div id="adminArea" style="display:none;"
+class="admin-container">
+
+<div class="admin-room">
+
+<h3>👀 ئاماری سەردانکەر</h3>
+
+<div id="visitorCount"
+style="
+font-size:35px;
+text-align:center;
+font-weight:bold;
+color:#2e86de;
+">
+0
+</div>
+
+</div>
+
+<div class="admin-room">
+
+<h3>📦 زیادکردنی بەرهەم</h3>
+
+<input type="text" id="pName"
+placeholder="ناوی بەرهەم">
+
+<input type="number" id="pPrice"
+placeholder="نرخ">
+
+<textarea id="pDesc"
+placeholder="وەسفی بەرهەم"></textarea>
+
+<input type="text" id="pImg"
+placeholder="لینکی وێنە">
+
+<select id="pType">
+<option value="normal">ئاسایی</option>
+<option value="sale">داشکاندن 🔥</option>
+<option value="guarantee">گرێنتی ✅</option>
+</select>
+
+<button class="btn-main" onclick="saveProduct()">
+بڵاوکردنەوە
+</button>
+
+</div>
+
+<div class="admin-room">
+
+<h3>🖼️ ڕیکلامەکان</h3>
+
+<input type="text" id="adImg"
+placeholder="لینکی وێنە">
+
+<button class="btn-main" onclick="addAd()">
+زیادکردنی ڕیکلام
+</button>
+
+<div id="adminAdList"></div>
+
+</div>
+
+<div class="admin-room">
+
+<h3>📌 بەڕێوەبردنی بەرهەمەکان</h3>
+
+<div id="adminProductList"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- NAV -->
 
 <div class="nav-bottom">
 
-    <div class="nav-btn active" onclick="showPage('home', this)">
-        🏠<br>سەرەکی
-    </div>
+<div class="nav-btn active"
+onclick="showPage('home', this)">
+🏠<br>سەرەکی
+</div>
 
-    <div class="nav-btn" onclick="showPage('cartPage', this)">
-        🛒<br>
-        سەبەتە
-        <span id="cartCount">0</span>
-    </div>
+<div class="nav-btn"
+onclick="showPage('cartPage', this)">
+🛒<br>
+سەبەتە
+<span id="cartCount">0</span>
+</div>
 
-    <div class="nav-btn" onclick="showPage('admin', this)">
-        👤<br>ئەدمین
-    </div>
+<div class="nav-btn"
+onclick="showPage('admin', this)">
+👤<br>ئەدمین
+</div>
 
 </div>
 
@@ -474,339 +615,475 @@ input,textarea,select{
 /* FIREBASE */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
-    databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
-    projectId: "zm-parfum",
+apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
+databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
+projectId: "zm-parfum",
 };
 
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
-/* VISITORS */
+/* VISITOR */
 
 let visitorRef = db.ref("visitors");
 
-visitorRef.transaction(current => {
-    return (current || 0) + 1;
+visitorRef.transaction(current=>{
+return (current || 0)+1;
 });
 
-visitorRef.on('value', snap => {
-    const el = document.getElementById("visitorCount");
-    if(el){
-        el.innerText = snap.val() || 0;
-    }
+visitorRef.on('value',snap=>{
+let el=document.getElementById("visitorCount");
+if(el){
+el.innerText=snap.val() || 0;
+}
 });
 
-/* PRICE */
+/* FORMAT */
 
 function formatPrice(num){
-    return Number(num).toLocaleString();
+return Number(num).toLocaleString();
 }
 
 /* PAGE */
 
-function showPage(id, btn){
+function showPage(id,btn){
 
-    document.querySelectorAll('.page').forEach(p=>{
-        p.classList.remove('active');
-    });
+document.querySelectorAll('.page')
+.forEach(p=>p.classList.remove('active'));
 
-    document.querySelectorAll('.nav-btn').forEach(b=>{
-        b.classList.remove('active');
-    });
+document.querySelectorAll('.nav-btn')
+.forEach(b=>b.classList.remove('active'));
 
-    document.getElementById(id).classList.add('active');
+document.getElementById(id)
+.classList.add('active');
 
-    btn.classList.add('active');
+btn.classList.add('active');
 
-    if(id === 'cartPage'){
-        updateCartUI();
-    }
+if(id==="cartPage"){
+updateCartUI();
+}
+
+}
+
+/* SEARCH */
+
+function searchProducts(){
+
+let input=document.getElementById("searchInput")
+.value.toLowerCase();
+
+let cards=document.querySelectorAll(".item-card");
+
+cards.forEach(card=>{
+
+let text=card.innerText.toLowerCase();
+
+if(text.includes(input)){
+card.style.display="block";
+}else{
+card.style.display="none";
+}
+
+});
+
 }
 
 /* PRODUCTS */
 
-db.ref('products').on('value', snap => {
+db.ref('products').on('value',snap=>{
 
-    const grid = document.getElementById('productGrid');
+const grid=document.getElementById('productGrid');
 
-    const adminList = document.getElementById('adminProductList');
+const adminList=document.getElementById('adminProductList');
 
-    grid.innerHTML = '';
+grid.innerHTML='';
+adminList.innerHTML='';
 
-    adminList.innerHTML = '';
+const data=snap.val();
 
-    const data = snap.val();
+if(data){
 
-    if(data){
+Object.keys(data).reverse().forEach(key=>{
 
-        Object.keys(data).reverse().forEach(key => {
+const p=data[key];
 
-            const p = data[key];
+grid.innerHTML += `
 
-            grid.innerHTML += `
-            <div class="item-card">
+<div class="item-card">
 
-                ${p.type === 'sale' ? '<div class="badge-sale">SALE 🔥</div>' : ''}
+${p.type==='sale' ?
+'<div class="badge-sale">SALE 🔥</div>' : ''}
 
-                ${p.type === 'guarantee' ? '<div class="badge-guarantee">گرێنتی ✅</div>' : ''}
+${p.type==='guarantee' ?
+'<div class="badge-guarantee">گرێنتی ✅</div>' : ''}
 
-                <div class="img-box">
-                    <img src="${p.img}">
-                </div>
+<div class="img-box">
+<img src="${p.img}">
+</div>
 
-                <div class="info">
+<div class="info">
 
-                    <b>${p.name}</b>
+<b>${p.name}</b>
 
-                    <div class="desc-text">
-                        ${p.desc || ''}
-                    </div>
+<div class="desc-text">
+${p.desc || ''}
+</div>
 
-                    <div class="price">
-                        ${formatPrice(p.price)} د.ع
-                    </div>
+<div class="price">
+${formatPrice(p.price)} د.ع
+</div>
 
-                    <button class="btn-main"
-                    style="padding:10px;font-size:12px;"
-                    onclick="addToCart('${p.name}','${p.price}','${p.img}')">
+<button class="add-cart-btn"
+onclick="addToCart('${p.name}',
+'${p.price}',
+'${p.img}')">
 
-                    زیادکردن بۆ سەبەتە
+زیادکردن بۆ سەبەتە 🛒
 
-                    </button>
+</button>
 
-                </div>
+</div>
 
-            </div>
-            `;
+</div>
 
-            adminList.innerHTML += `
-            <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:12px;
-            border-bottom:1px solid #eee;
-            ">
+`;
 
-            <span style="font-size:13px;">
-                ${p.name}
-            </span>
+adminList.innerHTML += `
 
-            <button onclick="db.ref('products/${key}').remove()"
-            style="
-            border:none;
-            background:red;
-            color:white;
-            padding:8px 12px;
-            border-radius:10px;
-            cursor:pointer;
-            ">
-            سڕینەوە
-            </button>
+<div style="
+display:flex;
+justify-content:space-between;
+padding:10px;
+border-bottom:1px solid #eee;
+">
 
-            </div>
-            `;
-        });
-    }
+<span>${p.name}</span>
+
+<button onclick="db.ref('products/${key}')
+.remove()"
+
+style="
+background:red;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:10px;
+">
+
+سڕینەوە
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
 });
 
 /* ADS */
 
-db.ref('ads').on('value', snap => {
+db.ref('ads').on('value',snap=>{
 
-    const slider = document.getElementById('adSlider');
+const slider=document.getElementById('adSlider');
 
-    const adminAdList = document.getElementById('adminAdList');
+const adminAdList=document.getElementById('adminAdList');
 
-    slider.innerHTML = '';
+slider.innerHTML='';
+adminAdList.innerHTML='';
 
-    adminAdList.innerHTML = '';
+const ads=snap.val();
 
-    const ads = snap.val();
+if(ads){
 
-    if(ads){
+Object.keys(ads).forEach((key,i)=>{
 
-        Object.keys(ads).forEach((key, i) => {
+slider.innerHTML += `
+<img src="${ads[key].img}"
+class="ad-slide ${i===0?'active':''}">
+`;
 
-            slider.innerHTML += `
-            <img src="${ads[key].img}"
-            class="ad-slide ${i===0 ? 'active' : ''}">
-            `;
+adminAdList.innerHTML += `
+<div style="padding:10px;">
 
-            adminAdList.innerHTML += `
-            <div style="padding:10px;">
+ڕیکلامی ${i+1}
 
-                ڕیکلامی ${i+1}
+<button onclick="db.ref('ads/${key}')
+.remove()">
 
-                <button onclick="db.ref('ads/${key}').remove()"
-                style="
-                border:none;
-                background:red;
-                color:white;
-                padding:5px 10px;
-                border-radius:8px;
-                ">
-                سڕینەوە
-                </button>
+سڕینەوە
 
-            </div>
-            `;
-        });
-    }
+</button>
+
+</div>
+`;
+
+});
+
+}
+
 });
 
 /* SLIDER */
 
-setInterval(() => {
+setInterval(()=>{
 
-    const slides = document.querySelectorAll('.ad-slide');
+const slides=document.querySelectorAll('.ad-slide');
 
-    if(slides.length > 0){
+if(slides.length>0){
 
-        let active = document.querySelector('.ad-slide.active');
+let active=document.querySelector('.ad-slide.active');
 
-        active.classList.remove('active');
+active.classList.remove('active');
 
-        (active.nextElementSibling || slides[0]).classList.add('active');
-    }
+(active.nextElementSibling || slides[0])
+.classList.add('active');
 
-}, 4000);
+}
+
+},4000);
 
 /* SAVE PRODUCT */
 
 function saveProduct(){
 
-    const p = {
+const p={
 
-        name:document.getElementById('pName').value,
+name:document.getElementById('pName').value,
 
-        price:document.getElementById('pPrice').value,
+price:document.getElementById('pPrice').value,
 
-        desc:document.getElementById('pDesc').value,
+desc:document.getElementById('pDesc').value,
 
-        img:document.getElementById('pImg').value,
+img:document.getElementById('pImg').value,
 
-        type:document.getElementById('pType').value
-    };
+type:document.getElementById('pType').value
 
-    if(p.name && p.price && p.img){
+};
 
-        db.ref('products').push().set(p, () => {
+if(p.name && p.price && p.img){
 
-            alert("بەرهەم زیادکرا ✅");
+db.ref('products').push().set(p,()=>{
 
-        });
-    }
+alert("بەرهەم زیادکرا ✅");
+
+});
+
+}
+
 }
 
 /* ADD AD */
 
 function addAd(){
 
-    const img = document.getElementById('adImg').value;
+const img=document.getElementById('adImg').value;
 
-    if(img){
+if(img){
 
-        db.ref('ads').push().set({img}, () => {
+db.ref('ads').push().set({img},()=>{
 
-            alert("ڕیکلام زیادکرا ✅");
+alert("ڕیکلام زیادکرا ✅");
 
-        });
-    }
+});
+
+}
+
 }
 
 /* LOGIN */
 
 function checkLogin(){
 
-    if(document.getElementById('adminPass').value === '75331541'){
+if(document.getElementById('adminPass')
+.value==='75331541'){
 
-        document.getElementById('loginArea').style.display = 'none';
+document.getElementById('loginArea')
+.style.display='none';
 
-        document.getElementById('adminArea').style.display = 'block';
+document.getElementById('adminArea')
+.style.display='block';
 
-    }else{
+}else{
 
-        alert("پاسۆرد هەڵەیە ❌");
-    }
+alert("پاسۆرد هەڵەیە ❌");
+
+}
+
 }
 
 /* CART */
 
-let cart = [];
+let cart=[];
 
 function addToCart(n,p,i){
 
-    cart.push({
-        name:n,
-        price:p,
-        img:i
-    });
+cart.push({
+name:n,
+price:p,
+img:i
+});
 
-    document.getElementById('cartCount').innerText = cart.length;
+document.getElementById('cartCount')
+.innerText=cart.length;
 
-    alert("زیادکرا بۆ سەبەتە 🛒");
+alert("زیادکرا بۆ سەبەتە 🛒");
+
 }
+
+/* PROMO */
+
+let discount=0;
+
+function applyPromo(){
+
+let code=document.getElementById("promoCode").value;
+
+if(code==="ZM100"){
+
+discount=1000;
+
+alert("١٠٠٠ د.ع داشکاو ✅");
+
+}else if(code==="ZM5000"){
+
+discount=5000;
+
+alert("٥٠٠٠ د.ع داشکاو ✅");
+
+}else{
+
+alert("کۆدی هەڵە ❌");
+
+}
+
+updateCartUI();
+
+}
+
+/* CART UI */
 
 function updateCartUI(){
 
-    const list = document.getElementById('cartList');
+const list=document.getElementById('cartList');
 
-    list.innerHTML = '';
+list.innerHTML='';
 
-    let total = 0;
+let total=0;
 
-    cart.forEach(item => {
+cart.forEach(item=>{
 
-        list.innerHTML += `
-        <div class="cart-item">
+list.innerHTML += `
 
-            <img src="${item.img}">
+<div class="cart-item">
 
-            <div style="flex:1;">
+<img src="${item.img}">
 
-                <div class="cart-item-name">
-                    ${item.name}
-                </div>
+<div style="flex:1;">
 
-                <div class="cart-price">
-                    ${formatPrice(item.price)} د.ع
-                </div>
+<div>
+${item.name}
+</div>
 
-            </div>
+<div class="cart-price">
+${formatPrice(item.price)} د.ع
+</div>
 
-        </div>
-        `;
+</div>
 
-        total += parseInt(item.price);
-    });
+</div>
 
-    document.getElementById('cartTotal').innerText =
-    "کۆی گشتی : " + formatPrice(total) + " د.ع";
+`;
 
-    document.getElementById('orderBtn').style.display =
-    cart.length > 0 ? 'block' : 'none';
+total += parseInt(item.price);
+
+});
+
+total=total-discount;
+
+if(total<0){
+total=0;
+}
+
+document.getElementById('cartTotal')
+.innerText=
+"کۆی گشتی : "
++ formatPrice(total)
++ " د.ع";
+
+document.getElementById('orderBtn')
+.style.display=
+cart.length>0 ? 'block' : 'none';
+
+}
+
+/* SPIN */
+
+let rewards=[
+"🎁 ٥ هەزار کاش باک",
+"🎉 دیاری",
+"💰 ١ هەزار دیاری",
+"😅 هیچ",
+"🔁 دوبارە",
+"🎊 داشکاندن"
+];
+
+function spinWheel(){
+
+let wheel=document.getElementById("wheel");
+
+let result=document.getElementById("spinResult");
+
+let randomDeg=
+2000 + Math.floor(Math.random()*2000);
+
+wheel.style.transform=
+`rotate(${randomDeg}deg)`;
+
+let reward=
+rewards[Math.floor(Math.random()*rewards.length)];
+
+setTimeout(()=>{
+
+result.innerText=reward;
+
+alert("ئەنجام : " + reward);
+
+},4000);
+
 }
 
 /* WHATSAPP */
 
 function sendToWhatsApp(){
 
-    let msg = "سڵاو، داواکاریم هەیە:%0A%0A";
+let note=
+document.getElementById("customerNote").value;
 
-    cart.forEach(i => {
+let msg=
+"سڵاو، داواکاریم هەیە:%0A%0A";
 
-        msg += `- ${i.name} (${formatPrice(i.price)} د.ع)%0A`;
+cart.forEach(i=>{
 
-    });
+msg +=
+`- ${i.name} (${formatPrice(i.price)} د.ع)%0A`;
 
-    msg += `%0Aکۆی گشتی: ${formatPrice(
-        cart.reduce((a,b)=>a + parseInt(b.price),0)
-    )} د.ع`;
+});
 
-    window.open(`https://wa.me/9647507131541?text=${msg}`);
+msg +=
+`%0A🎁 داشکاندن : ${formatPrice(discount)} د.ع`;
+
+msg +=
+`%0A📝 تێبینی : ${note}`;
+
+window.open(
+`https://wa.me/9647507131541?text=${msg}`
+);
+
 }
 
 </script>
