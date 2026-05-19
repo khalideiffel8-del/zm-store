@@ -79,7 +79,7 @@ body{
     font-size:15px;
 }
 
-/* 🌟 NEW SCROLLABLE CATEGORIES (وەک وێنەکە) 🌟 */
+/* SCROLLABLE CATEGORIES */
 .categories-container {
     width: 100%;
     background: #fff;
@@ -97,11 +97,11 @@ body{
     overflow-x: auto;
     white-space: nowrap;
     padding: 5px 15px;
-    scrollbar-width: none; /* بۆ شاردنەوەی سکرۆڵ لە فایەرفۆکس */
+    scrollbar-width: none;
 }
 
 .categories-scroll::-webkit-scrollbar {
-    display: none; /* بۆ شاردنەوەی سکرۆڵ لە فرۆم و سەفاری */
+    display: none;
 }
 
 .cat-tab {
@@ -117,10 +117,9 @@ body{
 }
 
 .cat-tab.active-tab {
-    color: var(--red); /* ڕەنگی دەقی چالاک وەک وێنەکە */
+    color: var(--red);
 }
 
-/* هێڵەکەی ژێر دوگمەکە وەک وێنەکە */
 .cat-tab.active-tab::after {
     content: '';
     position: absolute;
@@ -136,11 +135,11 @@ body{
 .category-section {
     width: 95%;
     margin: 0 auto 20px auto;
-    display: none; /* سەرەتا لادەبرێن تا کلیکیان لێنەکرێت */
+    display: none; 
 }
 
 .category-section.active-section {
-    display: block; /* تەنها بەشی دیاریکراو پیشان دەدات */
+    display: block; 
 }
 
 .category-title-box {
@@ -473,15 +472,26 @@ onkeyup="searchProducts()">
 
 <div class="categories-container">
     <div class="categories-scroll">
-        <button class="cat-tab active-tab" onclick="switchCategory('perfume', this)">✨ بەشی بۆن</button>
+        <button class="cat-tab active-tab" onclick="switchCategory('all', this)">🔥 هەموو بەرهەمەکان</button>
+        <button class="cat-tab" onclick="switchCategory('perfume', this)">✨ بەشی بۆن</button>
         <button class="cat-tab" onclick="switchCategory('shampoo', this)">🧼 بەشی شامپۆ</button>
         <button class="cat-tab" onclick="switchCategory('men', this)">🧔 بەشی پیاوان</button>
+        <button class="cat-tab" onclick="switchCategory('women', this)">👩 بەشی ئافرەتان</button>
+        <button class="cat-tab" onclick="switchCategory('paint', this)">🎨 بەشی سبوخ</button>
         <button class="cat-tab" onclick="switchCategory('cream', this)">🧴 بەشی کرێم</button>
         <button class="cat-tab" onclick="switchCategory('other', this)">📦 بەرهەمەکانی تر</button>
     </div>
 </div>
 
-<div id="perfumeSec" class="category-section active-section">
+<div id="allSec" class="category-section active-section">
+    <div class="category-title-box">
+        <h2>🔥 هەموو بەرهەمەکان</h2>
+        <button class="more-btn" onclick="alert('بەخێربێیت بۆ کۆگاکەمان')">سەرەکی</button>
+    </div>
+    <div id="allGrid" class="grid"></div>
+</div>
+
+<div id="perfumeSec" class="category-section">
     <div class="category-title-box">
         <h2>✨ بەشی بۆنەکان</h2>
         <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
@@ -503,6 +513,22 @@ onkeyup="searchProducts()">
         <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
     </div>
     <div id="menGrid" class="grid"></div>
+</div>
+
+<div id="womenSec" class="category-section">
+    <div class="category-title-box">
+        <h2>👩 بەشی تایبەت بە ئافرەتان</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="womenGrid" class="grid"></div>
+</div>
+
+<div id="paintSec" class="category-section">
+    <div class="category-title-box">
+        <h2>🎨 بەشی سبوخ</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="paintGrid" class="grid"></div>
 </div>
 
 <div id="creamSec" class="category-section">
@@ -559,7 +585,7 @@ placeholder="تێبینی بۆ داواکاری..."></textarea>
 
 <button class="btn-main" id="orderBtn"
 onclick="sendToWhatsApp()" style="display:none;">
-ناردنی داواکاری ✅
+nاردنی داواکاری ✅
 </button>
 
 </div>
@@ -620,6 +646,8 @@ placeholder="لینکی وێنە">
 <option value="perfume">بۆن</option>
 <option value="shampoo">شامپۆ</option>
 <option value="men">پیاوان</option>
+<option value="women">ئافرەتان 👩</option>
+<option value="paint">سبوخ 🎨</option>
 <option value="cream">کرێم</option>
 <option value="other">زیاتر بزانە (گشتی)</option>
 </select>
@@ -741,17 +769,14 @@ updateCartUI();
 
 }
 
-/* 🌟 FUNCTION TO SWITCH CATEGORIES 🌟 */
+/* SWITCH CATEGORIES */
 function switchCategory(catId, btnElement) {
-    // لادانی هێڵ و ڕەنگی سووری کۆن
     document.querySelectorAll('.cat-tab').forEach(tab => tab.classList.remove('active-tab'));
-    // چالاککردنی دوگمە نوێیەکە
-    btnElement.classList.add('active-tab');
+    if(btnElement) btnElement.classList.add('active-tab');
 
-    // شاردنەوەی هەموو بەشەکان
     document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active-section'));
-    // پیشاندانی ئەو بەشەی کڕیار کلیکی لێکردووە
-    document.getElementById(catId + 'Sec').classList.add('active-section');
+    const targetSec = document.getElementById(catId + 'Sec');
+    if(targetSec) targetSec.classList.add('active-section');
 }
 
 /* SEARCH */
@@ -781,17 +806,23 @@ card.style.display="none";
 
 db.ref('products').on('value',snap=>{
 
+const allGrid=document.getElementById('allGrid');
 const perfumeGrid=document.getElementById('perfumeGrid');
 const shampooGrid=document.getElementById('shampooGrid');
 const menGrid=document.getElementById('menGrid');
+const womenGrid=document.getElementById('womenGrid');
+const paintGrid=document.getElementById('paintGrid');
 const creamGrid=document.getElementById('creamGrid');
 const otherGrid=document.getElementById('otherGrid');
 
 const adminList=document.getElementById('adminProductList');
 
+allGrid.innerHTML='';
 perfumeGrid.innerHTML='';
 shampooGrid.innerHTML='';
 menGrid.innerHTML='';
+womenGrid.innerHTML='';
+paintGrid.innerHTML='';
 creamGrid.innerHTML='';
 otherGrid.innerHTML='';
 adminList.innerHTML='';
@@ -843,9 +874,15 @@ onclick="addToCart('${p.name}',
 </div>
 `;
 
+// هەمیشە پۆستەکان دەچنە ناو بەشی سەرەکی (هەموو بەرهەمەکان)
+allGrid.innerHTML += productHTML;
+
+// لێرەشدا بەپێی بەشەکەی جیا دەبنەوە
 if(p.category === 'perfume') perfumeGrid.innerHTML += productHTML;
 else if(p.category === 'shampoo') shampooGrid.innerHTML += productHTML;
 else if(p.category === 'men') menGrid.innerHTML += productHTML;
+else if(p.category === 'women') womenGrid.innerHTML += productHTML;
+else if(p.category === 'paint') paintGrid.innerHTML += productHTML;
 else if(p.category === 'cream') creamGrid.innerHTML += productHTML;
 else otherGrid.innerHTML += productHTML;
 
@@ -958,7 +995,7 @@ if(p.name && p.price && p.img){
         });
     } else {
         db.ref('products').push().set(p,()=>{
-            alert("بەرهەم زیادکرا ✅");
+            alert("بەرهەم زیادکرا و لە هەردوو لا بڵاوکرایەوە ✅");
             clearForm();
         });
     }
