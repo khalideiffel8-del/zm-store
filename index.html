@@ -585,7 +585,7 @@ placeholder="تێبینی بۆ داواکاری..."></textarea>
 
 <button class="btn-main" id="orderBtn"
 onclick="sendToWhatsApp()" style="display:none;">
-nاردنی داواکاری ✅
+ناردنی داواکاری ✅
 </button>
 
 </div>
@@ -714,8 +714,7 @@ onclick="showPage('admin', this)">
 
 <script>
 
-/* FIREBASE */
-
+/* FIREBASE CONFIG */
 const firebaseConfig = {
 apiKey: "AIzaSyCISwp1LFeCxcHvJigQblZb6BSTi",
 databaseURL: "https://zm-parfum-default-rtdb.firebaseio.com",
@@ -723,50 +722,31 @@ projectId: "zm-parfum",
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
 let currentRoom = "general";
 
-/* VISITOR */
-
+/* VISITOR COUNT */
 let visitorRef = db.ref("visitors");
-
 visitorRef.transaction(current=>{
 return (current || 0)+1;
 });
-
 visitorRef.on('value',snap=>{
 let el=document.getElementById("visitorCount");
-if(el){
-el.innerText=snap.val() || 0;
-}
+if(el){el.innerText=snap.val() || 0;}
 });
 
-/* FORMAT */
-
+/* FORMAT PRICE */
 function formatPrice(num){
 return Number(num).toLocaleString();
 }
 
-/* PAGE */
-
+/* LAUNCH PAGES */
 function showPage(id,btn){
-
-document.querySelectorAll('.page')
-.forEach(p=>p.classList.remove('active'));
-
-document.querySelectorAll('.nav-btn')
-.forEach(b=>b.classList.remove('active'));
-
-document.getElementById(id)
-.classList.add('active');
-
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById(id).classList.add('active');
 btn.classList.add('active');
-
-if(id==="cartPage"){
-updateCartUI();
-}
-
+if(id==="cartPage"){updateCartUI();}
 }
 
 /* SWITCH CATEGORIES */
@@ -779,31 +759,17 @@ function switchCategory(catId, btnElement) {
     if(targetSec) targetSec.classList.add('active-section');
 }
 
-/* SEARCH */
-
+/* SEARCH PRODUCTS */
 function searchProducts(){
-
-let input=document.getElementById("searchInput")
-.value.toLowerCase();
-
+let input=document.getElementById("searchInput").value.toLowerCase();
 let cards=document.querySelectorAll(".item-card");
-
 cards.forEach(card=>{
-
 let text=card.innerText.toLowerCase();
-
-if(text.includes(input)){
-card.style.display="block";
-}else{
-card.style.display="none";
-}
-
+if(text.includes(input)){card.style.display="block";}else{card.style.display="none";}
 });
-
 }
 
-/* PRODUCTS */
-
+/* FETCH PRODUCTS FROM FIREBASE */
 db.ref('products').on('value',snap=>{
 
 const allGrid=document.getElementById('allGrid');
@@ -814,7 +780,6 @@ const womenGrid=document.getElementById('womenGrid');
 const paintGrid=document.getElementById('paintGrid');
 const creamGrid=document.getElementById('creamGrid');
 const otherGrid=document.getElementById('otherGrid');
-
 const adminList=document.getElementById('adminProductList');
 
 allGrid.innerHTML='';
@@ -830,54 +795,27 @@ adminList.innerHTML='';
 const data=snap.val();
 
 if(data){
-
 Object.keys(data).reverse().forEach(key=>{
-
 const p=data[key];
 
 let productHTML = `
 <div class="item-card">
-
-${p.type==='sale' ?
-'<div class="badge-sale">SALE 🔥</div>' : ''}
-
-${p.type==='guarantee' ?
-'<div class="badge-guarantee">گرێنتی ✅</div>' : ''}
-
-<div class="img-box">
-<img src="${p.img}">
-</div>
-
+${p.type==='sale' ? '<div class="badge-sale">SALE 🔥</div>' : ''}
+${p.type==='guarantee' ? '<div class="badge-guarantee">گرێنتی ✅</div>' : ''}
+<div class="img-box"><img src="${p.img}"></div>
 <div class="info">
-
 <b>${p.name}</b>
-
-<div class="desc-text">
-${p.desc || ''}
+<div class="desc-text">${p.desc || ''}</div>
+<div class="price">${formatPrice(p.price)} د.ع</div>
+<button class="add-cart-btn" onclick="addToCart('${p.name}','${p.price}','${p.img}')">زیادکردن بۆ سەبەتە 🛒</button>
 </div>
-
-<div class="price">
-${formatPrice(p.price)} د.ع
-</div>
-
-<button class="add-cart-btn"
-onclick="addToCart('${p.name}',
-'${p.price}',
-'${p.img}')">
-
-زیادکردن بۆ سەبەتە 🛒
-
-</button>
-
-</div>
-
 </div>
 `;
 
-// هەمیشە پۆستەکان دەچنە ناو بەشی سەرەکی (هەموو بەرهەمەکان)
+// هەمیشە وێنەکان لە لاپەڕەی سەرەکی (allGrid) نیشان دەدرێن
 allGrid.innerHTML += productHTML;
 
-// لێرەشدا بەپێی بەشەکەی جیا دەبنەوە
+// لێرەشدا بەپێی بەشەکانیان جیا دەبنەوە
 if(p.category === 'perfume') perfumeGrid.innerHTML += productHTML;
 else if(p.category === 'shampoo') shampooGrid.innerHTML += productHTML;
 else if(p.category === 'men') menGrid.innerHTML += productHTML;
@@ -888,13 +826,7 @@ else otherGrid.innerHTML += productHTML;
 
 if(currentRoom === "general" || p.room === currentRoom) {
     adminList.innerHTML += `
-    <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px;
-    border-bottom:1px solid #eee;
-    ">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
     <span>${p.name} <small style="color:blue;">(${p.room || 'گشتی'})</small></span>
     <div>
         <button onclick="editProduct('${key}')" style="background:#d4af37;color:black;border:none;padding:8px 12px;border-radius:10px;margin-left:5px;cursor:pointer;">دەسکاری</button>
@@ -903,80 +835,43 @@ if(currentRoom === "general" || p.room === currentRoom) {
     </div>
     `;
 }
-
 });
-
 }
-
 });
 
-/* ADS */
-
+/* FETCH ADS */
 db.ref('ads').on('value',snap=>{
-
 const slider=document.getElementById('adSlider');
-
 const adminAdList=document.getElementById('adminAdList');
-
 slider.innerHTML='';
 adminAdList.innerHTML='';
-
 const ads=snap.val();
-
 if(ads){
-
 Object.keys(ads).forEach((key,i)=>{
-
-slider.innerHTML += `
-<img src="${ads[key].img}"
-class="ad-slide ${i===0?'active':''}">
-`;
-
+slider.innerHTML += `<img src="${ads[key].img}" class="ad-slide ${i===0?'active':''}">`;
 adminAdList.innerHTML += `
 <div style="padding:10px; display:flex; justify-content:space-between;">
-
 <span>ڕیکلامی ${i+1}</span>
-
-<button onclick="db.ref('ads/${key}').remove()" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px;">
-
-سڕینەوە
-
-</button>
-
+<button onclick="db.ref('ads/${key}').remove()" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px;">سڕینەوە</button>
 </div>
 `;
-
 });
-
 }
-
 });
 
-/* SLIDER */
-
+/* AD SLIDER TIMER */
 setInterval(()=>{
-
 const slides=document.querySelectorAll('.ad-slide');
-
 if(slides.length>0){
-
 let active=document.querySelector('.ad-slide.active');
-
 active.classList.remove('active');
-
-(active.nextElementSibling || slides[0])
-.classList.add('active');
-
+(active.nextElementSibling || slides[0]).classList.add('active');
 }
-
 },4000);
 
 /* SAVE & UPDATE PRODUCT */
-
 function saveProduct(){
-
 const pKey = document.getElementById('pKey').value;
-
 const p={
 name:document.getElementById('pName').value,
 price:document.getElementById('pPrice').value,
@@ -986,7 +881,6 @@ category:document.getElementById('pCategory').value,
 type:document.getElementById('pType').value,
 room: currentRoom
 };
-
 if(p.name && p.price && p.img){
     if(pKey) {
         db.ref('products/' + pKey).update(p, ()=>{
@@ -999,13 +893,10 @@ if(p.name && p.price && p.img){
             clearForm();
         });
     }
-} else {
-    alert("تکایە هەموو خانەکان پڕبکەرەوە ❌");
+} else {alert("تکایە هەموو خانەکان پڕبکەرەوە ❌");}
 }
 
-}
-
-/* EDIT PRODUCT FUNCTION */
+/* EDIT PRODUCT */
 function editProduct(key) {
     db.ref('products/' + key).once('value', snap => {
         const p = snap.val();
@@ -1017,10 +908,8 @@ function editProduct(key) {
             document.getElementById('pImg').value = p.img;
             document.getElementById('pCategory').value = p.category || 'other';
             document.getElementById('pType').value = p.type;
-            
             document.getElementById('formActionTitle').innerText = "✏️ دەسکاری کردنی بەرهەم";
             document.getElementById('saveBtn').innerText = "تۆمارکردنی گۆڕانکارییەکان";
-            
             document.getElementById('adminArea').scrollTop = 0;
         }
     });
@@ -1036,30 +925,20 @@ function clearForm() {
     document.getElementById('saveBtn').innerText = "بڵاوکردنەوە";
 }
 
-/* ADD AD */
-
+/* ADD AD广告 */
 function addAd(){
-
 const img=document.getElementById('adImg').value;
-
 if(img){
-
 db.ref('ads').push().set({img},()=>{
-
 alert("ڕیکلام زیادکرا ✅");
 document.getElementById('adImg').value = '';
-
 });
-
+}
 }
 
-}
-
-/* LOGIN WITH ROOMS */
-
+/* ADMIN LOGIN */
 function checkLogin(){
 const pass = document.getElementById('adminPass').value;
-
 if(pass === '75331541'){
     currentRoom = "general";
     document.getElementById('roomTitle').innerText = "💻 ژووری گشتی ئەدمین";
@@ -1072,146 +951,72 @@ if(pass === '75331541'){
     currentRoom = "room2";
     document.getElementById('roomTitle').innerText = "🚪 ژووری دووەم (ئەدمین ٢)";
     loginSuccess();
-} else {
-    alert("پاسۆرد هەڵەیە ❌");
-}
-
+} else {alert("پاسۆرد هەڵەیە ❌");}
 }
 
 function loginSuccess() {
     document.getElementById('loginArea').style.display='none';
     document.getElementById('adminArea').style.display='block';
-    db.ref('products').on('value', ()=>{}); 
 }
 
-/* CART */
-
+/* CART ACTIONS */
 let cart=[];
-
 function addToCart(n,p,i){
-
-cart.push({
-name:n,
-price:p,
-img:i
-});
-
-document.getElementById('cartCount')
-.innerText=cart.length;
-
-alert("زیات کرا بۆ سەبەتە 🛒");
-
+cart.push({name:n,price:p,img:i});
+document.getElementById('cartCount').innerText=cart.length;
+alert("زیاد کرا بۆ سەبەتە 🛒");
 }
 
-/* PROMO */
-
+/* PROMO CODE */
 let discount=0;
 let usedPromo = "هیچ";
-
 function applyPromo(){
-
 let code=document.getElementById("promoCode").value;
-
 if(code==="zako"){
-    discount=2000; 
-    usedPromo = "zako";
+    discount=2000; usedPromo = "zako";
     alert("کۆدی zako چالاک بوو! داشکاندن جێبەجێکرا ✅");
 } else if(code==="ZM100"){
-
-discount=1000;
-usedPromo = "ZM100";
-alert("١٠٠٠ د.ع داشکاو ✅");
-
-}else if(code==="ZM5000"){
-
-discount=5000;
-usedPromo = "ZM5000";
-alert("٥٠٠٠ د.ع داشکاو ✅");
-
-}else {
-    alert("کۆدی هەڵە ❌");
-}
-
+    discount=1000; usedPromo = "ZM100";
+    alert("١٠٠٠ د.ع داشکاو ✅");
+} else if(code==="ZM5000"){
+    discount=5000; usedPromo = "ZM5000";
+    alert("٥٠٠٠ د.ع داشکاو ✅");
+} else {alert("کۆدی هەڵە ❌");}
 updateCartUI();
-
 }
 
-/* CART UI */
-
+/* REFRESH CART */
 function updateCartUI(){
-
 const list=document.getElementById('cartList');
-
 list.innerHTML='';
-
 let total=0;
-
 cart.forEach(item=>{
-
 list.innerHTML += `
-
 <div class="cart-item">
-
 <img src="${item.img}">
-
 <div style="flex:1;">
-
-<div>
-${item.name}
+<div>${item.name}</div>
+<div class="cart-price">${formatPrice(item.price)} د.ع</div>
 </div>
-
-<div class="cart-price">
-${formatPrice(item.price)} د.ع
 </div>
-
-</div>
-
-</div>
-
 `;
-
 total += parseInt(item.price);
-
 });
-
 total=total-discount;
-
-if(total<0){
-total=0;
+if(total<0){total=0;}
+document.getElementById('cartTotal').innerText="کۆی گشتی : " + formatPrice(total) + " د.ع";
+document.getElementById('orderBtn').style.display= cart.length>0 ? 'block' : 'none';
 }
 
-document.getElementById('cartTotal')
-.innerText=
-"کۆی گشتی : "
-+ formatPrice(total)
-+ " د.ع";
-
-document.getElementById('orderBtn')
-.style.display=
-cart.length>0 ? 'block' : 'none';
-
-}
-
-/* WHATSAPP */
-
+/* WHATSAPP INTEGRATION */
 function sendToWhatsApp(){
-
 let note= document.getElementById("customerNote").value || "تێبینی نییە";
-
 let msg= "سڵاو، داواکاریم هەیە:%0A%0A";
-
-cart.forEach(i=>{
-msg += `- ${i.name} (${formatPrice(i.price)} د.ع)%0A`;
-});
-
+cart.forEach(i=>{msg += `- ${i.name} (${formatPrice(i.price)} د.ع)%0A`;});
 msg += `%0A🎁 پرۆمۆ کۆد : ${usedPromo}`;
 msg += `%0A🎁 داشکاندن : ${formatPrice(discount)} د.ع`;
 msg += `%0A📝 تێبینی کڕیار : ${note}`;
-
-window.open(
-`https://wa.me/9647507131541?text=${msg}`
-);
-
+window.open(`https://wa.me/9647507131541?text=${msg}`);
 }
 
 </script>
