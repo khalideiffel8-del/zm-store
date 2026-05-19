@@ -66,7 +66,7 @@ body{
 
 .search-box{
     width:92%;
-    margin:15px auto;
+    margin:15px auto 5px auto;
 }
 
 .search-box input{
@@ -77,6 +77,96 @@ body{
     background:white;
     box-shadow:0 5px 20px rgba(0,0,0,0.06);
     font-size:15px;
+}
+
+/* 🌟 NEW SCROLLABLE CATEGORIES (وەک وێنەکە) 🌟 */
+.categories-container {
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    padding: 10px 0;
+    margin-bottom: 15px;
+}
+
+.categories-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 5px 15px;
+    scrollbar-width: none; /* بۆ شاردنەوەی سکرۆڵ لە فایەرفۆکس */
+}
+
+.categories-scroll::-webkit-scrollbar {
+    display: none; /* بۆ شاردنەوەی سکرۆڵ لە فرۆم و سەفاری */
+}
+
+.cat-tab {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    padding: 8px 4px;
+    position: relative;
+    transition: 0.3s;
+    border: none;
+    background: none;
+}
+
+.cat-tab.active-tab {
+    color: var(--red); /* ڕەنگی دەقی چالاک وەک وێنەکە */
+}
+
+/* هێڵەکەی ژێر دوگمەکە وەک وێنەکە */
+.cat-tab.active-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--red);
+    border-radius: 2px;
+}
+
+/* CATEGORY SECTIONS */
+.category-section {
+    width: 95%;
+    margin: 0 auto 20px auto;
+    display: none; /* سەرەتا لادەبرێن تا کلیکیان لێنەکرێت */
+}
+
+.category-section.active-section {
+    display: block; /* تەنها بەشی دیاریکراو پیشان دەدات */
+}
+
+.category-title-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    color: #000;
+    padding: 10px 5px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #ddd;
+}
+
+.category-title-box h2 {
+    font-size: 18px;
+}
+
+.more-btn {
+    background: #000;
+    color: var(--gold);
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 11px;
 }
 
 /* NAVIGATION */
@@ -143,7 +233,7 @@ body{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:12px;
-    padding:12px;
+    padding:5px;
 }
 
 .item-card{
@@ -333,52 +423,6 @@ input,textarea,select{
     box-shadow:0 5px 20px rgba(0,0,0,0.05);
 }
 
-/* WHEEL */
-
-#wheel{
-    width:220px;
-    height:220px;
-    border-radius:50%;
-    margin:auto;
-    border:10px solid #d4af37;
-    transition:4s ease-out;
-    background:
-    conic-gradient(
-        #ff4757 0deg 60deg,
-        #2ecc71 60deg 120deg,
-        #3498db 120deg 180deg,
-        #f1c40f 180deg 240deg,
-        #9b59b6 240deg 300deg,
-        #e67e22 300deg 360deg
-    );
-}
-
-.arrow{
-    width:0;
-    height:0;
-    border-left:15px solid transparent;
-    border-right:15px solid transparent;
-    border-bottom:30px solid red;
-    margin:auto;
-}
-
-.spin-btn{
-    margin-top:20px;
-    background:black;
-    color:gold;
-    border:none;
-    padding:14px 25px;
-    border-radius:15px;
-    cursor:pointer;
-}
-
-.spin-result{
-    margin-top:15px;
-    text-align:center;
-    font-size:18px;
-    font-weight:bold;
-}
-
 #cartTotal{
     text-align:center;
     font-size:22px;
@@ -417,8 +461,6 @@ input,textarea,select{
 </a>
 </div>
 
-<!-- HOME -->
-
 <div id="home" class="page active">
 
 <div class="search-box">
@@ -429,11 +471,57 @@ onkeyup="searchProducts()">
 
 <div class="ads-slider" id="adSlider"></div>
 
-<div id="productGrid" class="grid"></div>
-
+<div class="categories-container">
+    <div class="categories-scroll">
+        <button class="cat-tab active-tab" onclick="switchCategory('perfume', this)">✨ بەشی بۆن</button>
+        <button class="cat-tab" onclick="switchCategory('shampoo', this)">🧼 بەشی شامپۆ</button>
+        <button class="cat-tab" onclick="switchCategory('men', this)">🧔 بەشی پیاوان</button>
+        <button class="cat-tab" onclick="switchCategory('cream', this)">🧴 بەشی کرێم</button>
+        <button class="cat-tab" onclick="switchCategory('other', this)">📦 بەرهەمەکانی تر</button>
+    </div>
 </div>
 
-<!-- CART -->
+<div id="perfumeSec" class="category-section active-section">
+    <div class="category-title-box">
+        <h2>✨ بەشی بۆنەکان</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="perfumeGrid" class="grid"></div>
+</div>
+
+<div id="shampooSec" class="category-section">
+    <div class="category-title-box">
+        <h2>🧼 بەشی شامپۆکان</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="shampooGrid" class="grid"></div>
+</div>
+
+<div id="menSec" class="category-section">
+    <div class="category-title-box">
+        <h2>🧔 بەشی تایبەت بە پیاوان</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="menGrid" class="grid"></div>
+</div>
+
+<div id="creamSec" class="category-section">
+    <div class="category-title-box">
+        <h2>🧴 بەشی کرێمەکان</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="creamGrid" class="grid"></div>
+</div>
+
+<div id="otherSec" class="category-section">
+    <div class="category-title-box">
+        <h2>📦 بەرهەمەکانی تر</h2>
+        <button class="more-btn" onclick="alert('یاساکان یان زانیاری زیاتر لێرە بنووسە')">زیاتر بزانە</button>
+    </div>
+    <div id="otherGrid" class="grid"></div>
+</div>
+
+</div>
 
 <div id="cartPage" class="page">
 
@@ -442,8 +530,6 @@ onkeyup="searchProducts()">
 </h2>
 
 <div id="cartList"></div>
-
-<!-- PROMO -->
 
 <div class="promo-box">
 
@@ -458,8 +544,6 @@ placeholder="پرۆمۆ کۆد">
 
 </div>
 
-<!-- NOTE -->
-
 <div class="note-box">
 
 <h3 style="text-align:center;">
@@ -471,9 +555,6 @@ placeholder="تێبینی بۆ داواکاری..."></textarea>
 
 </div>
 
-
-</div>
-
 <div id="cartTotal"></div>
 
 <button class="btn-main" id="orderBtn"
@@ -482,8 +563,6 @@ onclick="sendToWhatsApp()" style="display:none;">
 </button>
 
 </div>
-
-<!-- ADMIN -->
 
 <div id="admin" class="page">
 
@@ -500,6 +579,8 @@ placeholder="پاسۆردی ئەدمین">
 
 <div id="adminArea" style="display:none;"
 class="admin-container">
+
+<h2 id="roomTitle" style="text-align:center; margin-bottom:15px; color:var(--gold);">ژووری ئەدمین</h2>
 
 <div class="admin-room">
 
@@ -519,7 +600,9 @@ color:#2e86de;
 
 <div class="admin-room">
 
-<h3>📦 زیادکردنی بەرهەم</h3>
+<h3 id="formActionTitle">📦 زیادکردنی بەرهەم</h3>
+
+<input type="hidden" id="pKey">
 
 <input type="text" id="pName"
 placeholder="ناوی بەرهەم">
@@ -533,13 +616,21 @@ placeholder="وەسفی بەرهەم"></textarea>
 <input type="text" id="pImg"
 placeholder="لینکی وێنە">
 
+<select id="pCategory">
+<option value="perfume">بۆن</option>
+<option value="shampoo">شامپۆ</option>
+<option value="men">پیاوان</option>
+<option value="cream">کرێم</option>
+<option value="other">زیاتر بزانە (گشتی)</option>
+</select>
+
 <select id="pType">
 <option value="normal">ئاسایی</option>
 <option value="sale">داشکاندن 🔥</option>
 <option value="guarantee">گرێنتی ✅</option>
 </select>
 
-<button class="btn-main" onclick="saveProduct()">
+<button class="btn-main" id="saveBtn" onclick="saveProduct()">
 بڵاوکردنەوە
 </button>
 
@@ -571,8 +662,6 @@ placeholder="لینکی وێنە">
 </div>
 
 </div>
-
-<!-- NAV -->
 
 <div class="nav-bottom">
 
@@ -608,6 +697,7 @@ projectId: "zm-parfum",
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
+let currentRoom = "general";
 
 /* VISITOR */
 
@@ -651,6 +741,19 @@ updateCartUI();
 
 }
 
+/* 🌟 FUNCTION TO SWITCH CATEGORIES 🌟 */
+function switchCategory(catId, btnElement) {
+    // لادانی هێڵ و ڕەنگی سووری کۆن
+    document.querySelectorAll('.cat-tab').forEach(tab => tab.classList.remove('active-tab'));
+    // چالاککردنی دوگمە نوێیەکە
+    btnElement.classList.add('active-tab');
+
+    // شاردنەوەی هەموو بەشەکان
+    document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active-section'));
+    // پیشاندانی ئەو بەشەی کڕیار کلیکی لێکردووە
+    document.getElementById(catId + 'Sec').classList.add('active-section');
+}
+
 /* SEARCH */
 
 function searchProducts(){
@@ -678,11 +781,19 @@ card.style.display="none";
 
 db.ref('products').on('value',snap=>{
 
-const grid=document.getElementById('productGrid');
+const perfumeGrid=document.getElementById('perfumeGrid');
+const shampooGrid=document.getElementById('shampooGrid');
+const menGrid=document.getElementById('menGrid');
+const creamGrid=document.getElementById('creamGrid');
+const otherGrid=document.getElementById('otherGrid');
 
 const adminList=document.getElementById('adminProductList');
 
-grid.innerHTML='';
+perfumeGrid.innerHTML='';
+shampooGrid.innerHTML='';
+menGrid.innerHTML='';
+creamGrid.innerHTML='';
+otherGrid.innerHTML='';
 adminList.innerHTML='';
 
 const data=snap.val();
@@ -693,8 +804,7 @@ Object.keys(data).reverse().forEach(key=>{
 
 const p=data[key];
 
-grid.innerHTML += `
-
+let productHTML = `
 <div class="item-card">
 
 ${p.type==='sale' ?
@@ -731,38 +841,31 @@ onclick="addToCart('${p.name}',
 </div>
 
 </div>
-
 `;
 
-adminList.innerHTML += `
+if(p.category === 'perfume') perfumeGrid.innerHTML += productHTML;
+else if(p.category === 'shampoo') shampooGrid.innerHTML += productHTML;
+else if(p.category === 'men') menGrid.innerHTML += productHTML;
+else if(p.category === 'cream') creamGrid.innerHTML += productHTML;
+else otherGrid.innerHTML += productHTML;
 
-<div style="
-display:flex;
-justify-content:space-between;
-padding:10px;
-border-bottom:1px solid #eee;
-">
-
-<span>${p.name}</span>
-
-<button onclick="db.ref('products/${key}')
-.remove()"
-
-style="
-background:red;
-color:white;
-border:none;
-padding:8px 12px;
-border-radius:10px;
-">
-
-سڕینەوە
-
-</button>
-
-</div>
-
-`;
+if(currentRoom === "general" || p.room === currentRoom) {
+    adminList.innerHTML += `
+    <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    border-bottom:1px solid #eee;
+    ">
+    <span>${p.name} <small style="color:blue;">(${p.room || 'گشتی'})</small></span>
+    <div>
+        <button onclick="editProduct('${key}')" style="background:#d4af37;color:black;border:none;padding:8px 12px;border-radius:10px;margin-left:5px;cursor:pointer;">دەسکاری</button>
+        <button onclick="db.ref('products/${key}').remove()" style="background:red;color:white;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;">سڕینەوە</button>
+    </div>
+    </div>
+    `;
+}
 
 });
 
@@ -793,12 +896,11 @@ class="ad-slide ${i===0?'active':''}">
 `;
 
 adminAdList.innerHTML += `
-<div style="padding:10px;">
+<div style="padding:10px; display:flex; justify-content:space-between;">
 
-ڕیکلامی ${i+1}
+<span>ڕیکلامی ${i+1}</span>
 
-<button onclick="db.ref('ads/${key}')
-.remove()">
+<button onclick="db.ref('ads/${key}').remove()" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px;">
 
 سڕینەوە
 
@@ -832,34 +934,69 @@ active.classList.remove('active');
 
 },4000);
 
-/* SAVE PRODUCT */
+/* SAVE & UPDATE PRODUCT */
 
 function saveProduct(){
 
+const pKey = document.getElementById('pKey').value;
+
 const p={
-
 name:document.getElementById('pName').value,
-
 price:document.getElementById('pPrice').value,
-
 desc:document.getElementById('pDesc').value,
-
 img:document.getElementById('pImg').value,
-
-type:document.getElementById('pType').value
-
+category:document.getElementById('pCategory').value,
+type:document.getElementById('pType').value,
+room: currentRoom
 };
 
 if(p.name && p.price && p.img){
-
-db.ref('products').push().set(p,()=>{
-
-alert("بەرهەم زیادکرا ✅");
-
-});
+    if(pKey) {
+        db.ref('products/' + pKey).update(p, ()=>{
+            alert("بەرهەمەکە بە سەرکەوتوویی نوێکرایەوە ✅");
+            clearForm();
+        });
+    } else {
+        db.ref('products').push().set(p,()=>{
+            alert("بەرهەم زیادکرا ✅");
+            clearForm();
+        });
+    }
+} else {
+    alert("تکایە هەموو خانەکان پڕبکەرەوە ❌");
+}
 
 }
 
+/* EDIT PRODUCT FUNCTION */
+function editProduct(key) {
+    db.ref('products/' + key).once('value', snap => {
+        const p = snap.val();
+        if(p) {
+            document.getElementById('pKey').value = key;
+            document.getElementById('pName').value = p.name;
+            document.getElementById('pPrice').value = p.price;
+            document.getElementById('pDesc').value = p.desc || '';
+            document.getElementById('pImg').value = p.img;
+            document.getElementById('pCategory').value = p.category || 'other';
+            document.getElementById('pType').value = p.type;
+            
+            document.getElementById('formActionTitle').innerText = "✏️ دەسکاری کردنی بەرهەم";
+            document.getElementById('saveBtn').innerText = "تۆمارکردنی گۆڕانکارییەکان";
+            
+            document.getElementById('adminArea').scrollTop = 0;
+        }
+    });
+}
+
+function clearForm() {
+    document.getElementById('pKey').value = '';
+    document.getElementById('pName').value = '';
+    document.getElementById('pPrice').value = '';
+    document.getElementById('pDesc').value = '';
+    document.getElementById('pImg').value = '';
+    document.getElementById('formActionTitle').innerText = "📦 زیادکردنی بەرهەم";
+    document.getElementById('saveBtn').innerText = "بڵاوکردنەوە";
 }
 
 /* ADD AD */
@@ -873,6 +1010,7 @@ if(img){
 db.ref('ads').push().set({img},()=>{
 
 alert("ڕیکلام زیادکرا ✅");
+document.getElementById('adImg').value = '';
 
 });
 
@@ -880,25 +1018,33 @@ alert("ڕیکلام زیادکرا ✅");
 
 }
 
-/* LOGIN */
+/* LOGIN WITH ROOMS */
 
 function checkLogin(){
+const pass = document.getElementById('adminPass').value;
 
-if(document.getElementById('adminPass')
-.value==='75331541'){
-
-document.getElementById('loginArea')
-.style.display='none';
-
-document.getElementById('adminArea')
-.style.display='block';
-
-}else{
-
-alert("پاسۆرد هەڵەیە ❌");
+if(pass === '75331541'){
+    currentRoom = "general";
+    document.getElementById('roomTitle').innerText = "💻 ژووری گشتی ئەدمین";
+    loginSuccess();
+} else if(pass === 'room1') {
+    currentRoom = "room1";
+    document.getElementById('roomTitle').innerText = "🚪 ژووری یەکەم (ئەدمین ١)";
+    loginSuccess();
+} else if(pass === 'room2') {
+    currentRoom = "room2";
+    document.getElementById('roomTitle').innerText = "🚪 ژووری دووەم (ئەدمین ٢)";
+    loginSuccess();
+} else {
+    alert("پاسۆرد هەڵەیە ❌");
+}
 
 }
 
+function loginSuccess() {
+    document.getElementById('loginArea').style.display='none';
+    document.getElementById('adminArea').style.display='block';
+    db.ref('products').on('value', ()=>{}); 
 }
 
 /* CART */
@@ -916,34 +1062,37 @@ img:i
 document.getElementById('cartCount')
 .innerText=cart.length;
 
-alert("زیادکرا بۆ سەبەتە 🛒");
+alert("زیات کرا بۆ سەبەتە 🛒");
 
 }
 
 /* PROMO */
 
 let discount=0;
+let usedPromo = "هیچ";
 
 function applyPromo(){
 
 let code=document.getElementById("promoCode").value;
 
-if(code==="ZM100"){
+if(code==="zako"){
+    discount=2000; 
+    usedPromo = "zako";
+    alert("کۆدی zako چالاک بوو! داشکاندن جێبەجێکرا ✅");
+} else if(code==="ZM100"){
 
 discount=1000;
-
+usedPromo = "ZM100";
 alert("١٠٠٠ د.ع داشکاو ✅");
 
 }else if(code==="ZM5000"){
 
 discount=5000;
-
+usedPromo = "ZM5000";
 alert("٥٠٠٠ د.ع داشکاو ✅");
 
-}else{
-
-alert("کۆدی هەڵە ❌");
-
+}else {
+    alert("کۆدی هەڵە ❌");
 }
 
 updateCartUI();
@@ -1006,64 +1155,21 @@ cart.length>0 ? 'block' : 'none';
 
 }
 
-/* SPIN */
-
-let rewards=[
-"🎁 ٥ هەزار کاش باک",
-"🎉 دیاری",
-"💰 ١ هەزار دیاری",
-"😅 هیچ",
-"🔁 دوبارە",
-"🎊 داشکاندن"
-];
-
-function spinWheel(){
-
-let wheel=document.getElementById("wheel");
-
-let result=document.getElementById("spinResult");
-
-let randomDeg=
-2000 + Math.floor(Math.random()*2000);
-
-wheel.style.transform=
-`rotate(${randomDeg}deg)`;
-
-let reward=
-rewards[Math.floor(Math.random()*rewards.length)];
-
-setTimeout(()=>{
-
-result.innerText=reward;
-
-alert("ئەنجام : " + reward);
-
-},4000);
-
-}
-
 /* WHATSAPP */
 
 function sendToWhatsApp(){
 
-let note=
-document.getElementById("customerNote").value;
+let note= document.getElementById("customerNote").value || "تێبینی نییە";
 
-let msg=
-"سڵاو، داواکاریم هەیە:%0A%0A";
+let msg= "سڵاو، داواکاریم هەیە:%0A%0A";
 
 cart.forEach(i=>{
-
-msg +=
-`- ${i.name} (${formatPrice(i.price)} د.ع)%0A`;
-
+msg += `- ${i.name} (${formatPrice(i.price)} د.ع)%0A`;
 });
 
-msg +=
-`%0A🎁 داشکاندن : ${formatPrice(discount)} د.ع`;
-
-msg +=
-`%0A📝 تێبینی : ${note}`;
+msg += `%0A🎁 پرۆمۆ کۆد : ${usedPromo}`;
+msg += `%0A🎁 داشکاندن : ${formatPrice(discount)} د.ع`;
+msg += `%0A📝 تێبینی کڕیار : ${note}`;
 
 window.open(
 `https://wa.me/9647507131541?text=${msg}`
